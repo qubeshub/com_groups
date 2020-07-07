@@ -1186,43 +1186,6 @@ jQuery(document).ready(function($){
 		e.stopPropagation();
 	});
 
-	// Open group pages via ajax
-	const openURL = (href, savestate = true) => {
-		var link = href;
-		var container = $('#page_main');
-
-		container.load(link + ' #page_content_wrapper');
-
-		if (savestate) {
-			window.history.pushState({ href: href }, '', href);
-		}
-	}
-
-	$('.group-overview-tab a').on('click', function (e) {
-		e.preventDefault();
-		openURL($(this).attr('href'));
-
-		$(this).parent().addClass('active');
-		$('#page_menu a').not($(this)).parent().removeClass('active');
-	});
-
-	window.addEventListener('popstate', function (e) {
-		console.log(e.state);
-		if (e.state) {
-			openURL(e.state.href);
-
-			// Add active class if navigate back to an ajax page
-			if (window.location.href.indexOf(e.state.href) > 1) {
-				$('.group-overview-tab a').each(function () {
-					if ($(this).attr('href') === e.state.href) {
-						$(this).parent().addClass('active');
-						$('#page_menu a').not($(this)).parent().removeClass('active');
-					}
-				});
-			}
-		}
-	});
-
 });
 
 //-----------------------------------------------------------
