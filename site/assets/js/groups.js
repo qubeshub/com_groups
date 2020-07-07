@@ -11,6 +11,13 @@ if (!HUB) {
 	var HUB = {};
 }
 
+//-----------------------------------------------------------
+//  Ajax
+//-----------------------------------------------------------
+String.prototype.nohtml = function () {
+	return this + (this.indexOf('?') == -1 ? '?' : '&') + 'no_html=1';
+};
+
 //----------------------------------------------------------
 //  Members scripts
 //----------------------------------------------------------
@@ -1144,6 +1151,65 @@ jQuery(document).ready(function($){
 	}
 
 	HUB.Groups.initialize();
+
+	// Make parent menu item as the first menu item in the submenu
+	$('.group-overview-tab > ul > li').each(function () {
+		if ($(this).children('ul').length) {
+			var $subMenu = $(this).find('ul'),
+				$parentLinkText = $(this).children('a').text();
+
+			$subMenu.prepend('<li></li>');
+			$(this).children('a').prependTo($subMenu.children().first('li'));
+			$(this).addClass('menuItem').prepend('<button aria-label="menu" aria-haspopup="true" aria-expanded="false" class="icon-plus">' + $parentLinkText + '<img class="menu-icon" src="../../../core/assets/icons/plus.svg"></button>');
+
+			if ($(this).hasClass('active')) {
+				var $subMenu = $(this).find('ul');
+				$subMenu.children().first('li').addClass('active');
+			}
+
+			if ($subMenu.children('li').hasClass('active')) {
+				$subMenu.addClass('subMenuExpand');
+				$('.menu-icon').attr('src', '../../../core/assets/icons/minus.svg');
+			}
+		}
+	});
+
+	$('.menuItem > button').click(function (e) {
+		var $menuItem = $(this).parent(),
+			$menuBtn = $(this);
+
+		$menuItem.find('ul').toggleClass('subMenuExpand');
+		$menuBtn.attr('aria-expanded', 'true');
+		$('.menuItem').not($menuItem).find('ul').removeClass('subMenuExpand');
+		$('.menuItem > button').not($menuBtn).attr('aria-expanded', 'false');
+
+		if ($menuItem.find('ul').hasClass('subMenuExpand')) {
+			$('.menu-icon').attr('src', '../../../core/assets/icons/minus.svg');
+		} else {
+			$('.menu-icon').attr('src', '../../../core/assets/icons/plus.svg');
+		}
+
+		e.stopPropagation();
+	});
+
+	const openURL = (href, savestate = true) => {
+		var link = href;
+		var container = $('#page_main');
+
+		$.get(link.nohtml(), function (result) {
+			container.html(result);
+		});
+
+		if (savestate) {
+			window.history.pushState({ href: href }, '', href);
+		}
+	}
+
+	$('.group-overview-tab a').on('click', function (e) {
+		e.preventDefault();
+		openURL($(this).attr('href'));
+	});
+
 });
 
 //-----------------------------------------------------------
