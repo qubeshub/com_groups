@@ -11,13 +11,6 @@ if (!HUB) {
 	var HUB = {};
 }
 
-//-----------------------------------------------------------
-//  Ajax
-//-----------------------------------------------------------
-String.prototype.nohtml = function () {
-	return this + (this.indexOf('?') == -1 ? '?' : '&') + 'no_html=1';
-};
-
 //----------------------------------------------------------
 //  Members scripts
 //----------------------------------------------------------
@@ -1196,9 +1189,7 @@ jQuery(document).ready(function($){
 		var link = href;
 		var container = $('#page_main');
 
-		$.get(link.nohtml(), function (result) {
-			container.html(result);
-		});
+		container.load(link + ' #page_content_wrapper');
 
 		if (savestate) {
 			window.history.pushState({ href: href }, '', href);
@@ -1208,6 +1199,26 @@ jQuery(document).ready(function($){
 	$('.group-overview-tab a').on('click', function (e) {
 		e.preventDefault();
 		openURL($(this).attr('href'));
+
+		$(this).parent().addClass('active');
+		$('#page_menu a').not($(this)).parent().removeClass('active');
+	});
+
+	window.addEventListener('popstate', function (e) {
+		if (e.state) {
+
+			console.log(e.state.href);
+			openURL(e.state.href, false);
+
+			if (window.location.href.indexOf(e.state.href)) {
+				$('.group-overview-tab a').each(function () {
+					if ($(this).attr('href') === e.state.href) {
+						$(this).parent().addClass('active');
+						$('#page_menu a').not($(this)).parent().removeClass('active');
+					}
+				})
+			}
+		}
 	});
 
 });
