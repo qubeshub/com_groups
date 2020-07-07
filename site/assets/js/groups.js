@@ -1153,7 +1153,7 @@ jQuery(document).ready(function($){
 
 			$subMenu.prepend('<li></li>');
 			$(this).children('a').prependTo($subMenu.children().first('li'));
-			$(this).addClass('menuItem').prepend('<button aria-label="menu" aria-haspopup="true" aria-expanded="false" class="icon-plus">' + $parentLinkText + '<img class="menu-icon" src="../../../core/assets/icons/plus.svg"></button>');
+			$(this).addClass('menuItem').prepend('<button aria-label="menu" aria-haspopup="true" aria-expanded="false" class="icon-plus">' + $parentLinkText + '</button>');
 
 			if ($(this).hasClass('active')) {
 				var $subMenu = $(this).find('ul');
@@ -1162,11 +1162,12 @@ jQuery(document).ready(function($){
 
 			if ($subMenu.children('li').hasClass('active')) {
 				$subMenu.addClass('subMenuExpand');
-				$('.menu-icon').attr('src', '../../../core/assets/icons/minus.svg');
+				$('.menuItem > button').removeClass('icon-plus').addClass('icon-minus');
 			}
 		}
 	});
 
+	// Expand the menu
 	$('.menuItem > button').click(function (e) {
 		var $menuItem = $(this).parent(),
 			$menuBtn = $(this);
@@ -1177,14 +1178,15 @@ jQuery(document).ready(function($){
 		$('.menuItem > button').not($menuBtn).attr('aria-expanded', 'false');
 
 		if ($menuItem.find('ul').hasClass('subMenuExpand')) {
-			$('.menu-icon').attr('src', '../../../core/assets/icons/minus.svg');
+			$menuBtn.removeClass('icon-plus').addClass('icon-minus');
 		} else {
-			$('.menu-icon').attr('src', '../../../core/assets/icons/plus.svg');
+			$menuBtn.removeClass('icon-minus').addClass('icon-plus');
 		}
 
 		e.stopPropagation();
 	});
 
+	// Open group pages via ajax
 	const openURL = (href, savestate = true) => {
 		var link = href;
 		var container = $('#page_main');
@@ -1205,18 +1207,18 @@ jQuery(document).ready(function($){
 	});
 
 	window.addEventListener('popstate', function (e) {
+		console.log(e.state);
 		if (e.state) {
+			openURL(e.state.href);
 
-			console.log(e.state.href);
-			openURL(e.state.href, false);
-
-			if (window.location.href.indexOf(e.state.href)) {
+			// Add active class if navigate back to an ajax page
+			if (window.location.href.indexOf(e.state.href) > 1) {
 				$('.group-overview-tab a').each(function () {
 					if ($(this).attr('href') === e.state.href) {
 						$(this).parent().addClass('active');
 						$('#page_menu a').not($(this)).parent().removeClass('active');
 					}
-				})
+				});
 			}
 		}
 	});
