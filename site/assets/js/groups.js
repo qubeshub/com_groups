@@ -1162,7 +1162,7 @@ jQuery(document).ready(function($){
 
 			if ($subMenu.children('li').hasClass('active')) {
 				$subMenu.addClass('subMenuExpand');
-				$('.menuItem > button').removeClass('icon-plus').addClass('icon-minus');
+				$subMenu.siblings('button').removeClass('icon-plus').addClass('icon-minus').attr('aria-expanded', 'true');
 			}
 		}
 	});
@@ -1173,9 +1173,12 @@ jQuery(document).ready(function($){
 			$menuBtn = $(this);
 
 		$menuItem.find('ul').toggleClass('subMenuExpand');
-		$menuBtn.attr('aria-expanded', 'true');
-		$('.menuItem').not($menuItem).find('ul').removeClass('subMenuExpand');
-		$('.menuItem > button').not($menuBtn).attr('aria-expanded', 'false');
+		
+		if ($menuBtn.attr('aria-expanded') === 'false') {
+			$menuBtn.attr('aria-expanded', 'true');
+		} else {
+			$menuBtn.attr('aria-expanded', 'false');
+		}
 
 		if ($menuItem.find('ul').hasClass('subMenuExpand')) {
 			$menuBtn.removeClass('icon-plus').addClass('icon-minus');
