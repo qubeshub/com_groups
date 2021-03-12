@@ -38,13 +38,13 @@ defined('_HZEXEC_') or die();
 			<fieldset>
 				<legend><?php echo Lang::txt('COM_GROUPS_JOIN_SECTION_TITLE'); ?></legend>
 
-				<?php if ($this->group->get('restrict_msg')) { ?>
-					<p class="warning"><?php echo Lang::txt('NOTE') . ': ' . $this->escape(stripslashes($this->group->get('restrict_msg'))); ?></p>
-				<?php } ?>
-
 				<label for="reason">
-					<?php echo Lang::txt('COM_GROUPS_JOIN_REASON'); ?>
-					<textarea name="reason" id="reason" rows="10" cols="50"></textarea>
+					<?php if ($this->group->get('restrict_msg')) { ?>
+						<?php echo $this->group->get('restrict_msg'); ?>
+					<?php } else { ?>
+						<?php echo Lang::txt('COM_GROUPS_JOIN_REASON'); ?>
+					<?php } ?>
+					<?php echo $this->editor("reason", "", 50, 10, "reason", array('class' => 'minimal no-footer')); ?>
 				</label>
 				<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 				<input type="hidden" name="controller" value="membership" />

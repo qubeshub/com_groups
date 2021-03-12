@@ -189,7 +189,7 @@ endif;
 							<label for="restrict_msg" class="indent">
 								<strong><?php echo Lang::txt('COM_GROUPS_MEMBERSHIP_SETTINGS_RESTRICTED_SETTING_CREDENTIALS'); ?></strong>
 								(<?php echo Lang::txt('COM_GROUPS_MEMBERSHIP_SETTINGS_RESTRICTED_SETTING_CREDENTIALS_DESC'); ?>) <span class="optional"><?php echo Lang::txt('COM_GROUPS_OPTIONAL'); ?></span>
-								<textarea name="restrict_msg" id="restrict_msg" rows="5" cols="50"><?php echo htmlentities(stripslashes($this->group->get('restrict_msg'))); ?></textarea>
+								<?php echo $this->editor("restrict_msg", htmlentities(stripslashes($this->group->get('restrict_msg'))), 50, 5, "restrict_msg", array('class' => 'minimal no-footer')); ?>
 							</label>
 						</div>
 						<div class="form-group form-check">
