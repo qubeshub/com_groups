@@ -215,7 +215,7 @@ class Base extends SiteController
 			$group = Group::getInstance($this->cn);
 			if (is_object($group))
 			{
-				$this->_title = Lang::txt('COM_GROUPS_GROUP') . ': ' . stripslashes($group->get('description'));
+				$this->_title = stripslashes($group->get('description'));
 			}
 		}
 
@@ -231,11 +231,11 @@ class Base extends SiteController
 
 			if ($page !== null)
 			{
-				$this->_title .= ' ~ ' . Lang::txt($page->get('title'));
+				$this->_title .= ': ' . Lang::txt($page->get('title'));
 			}
 			else if ($this->active != 'overview')
 			{
-				$this->_title .= ' ~ ' . Lang::txt('COM_GROUPS_'.$this->active);
+				$this->_title .= ': ' . Lang::txt('COM_GROUPS_'.$this->active);
 			}
 		}
 
