@@ -903,6 +903,11 @@ class Membership extends Base
 	 */
 	public function joinTask()
 	{
+		// Return
+		require_once \Component::path('com_support') . DS . 'helpers' . DS . 'utilities.php';
+		$return = Request::getString('return', '');
+		$return = (\Components\Support\Helpers\Utilities::isBase64($return) ? base64_decode($return) : $return);
+
 		// Check if they're logged in
 		if (User::isGuest())
 		{
@@ -943,7 +948,7 @@ class Membership extends Base
 		//check if already member, or applicant
 		if (in_array(User::get('id'), $members))
 		{
-			App::redirect(Route::url('index.php?option=com_groups&cn='.$this->view->group->get('cn')));
+			App::redirect(($return ? $return : Route::url('index.php?option=com_groups&cn='.$this->view->group->get('cn'))));
 			return;
 		}
 
@@ -1012,7 +1017,7 @@ class Membership extends Base
 				'recipients' => $recipients
 			]);
 
-			App::redirect($url);
+			App::redirect(($return ? $return : Route::url('index.php?option=com_groups&cn='.$this->view->group->get('cn'))));
 		}
 	}
 
