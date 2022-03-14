@@ -8,6 +8,7 @@
 namespace Components\Groups\Models;
 
 use Hubzero\Database\Relational;
+use Components\Groups\Models\Orm\Field;
 
 /**
  * Recently visited groups
@@ -83,5 +84,45 @@ class Recent extends Relational
 		$recent->set('group_id', $group_id);
 		$recent->set('created', Date::of('now')->toSql());
 		$recent->save();
+	}
+
+	/**
+	 * Remove records by user ID and group ID combo
+	 *
+	 * @param   integer  $user_id
+	 * @param	integer	 $group_id
+	 * @return  boolean  False if error, True on success
+	 */
+	public static function deleteRecent($user_id, $group_id)
+	{
+		$row = self::all()
+			->whereEquals('user_id', $user_id)
+			->whereEquals('group_id', $group_id)
+			->row();
+
+		if (!$row->destroy())
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Remove records by user ID and group ID combo
+	 *
+	 * @param	Object	 $group
+	 * @return  boolean  False if error, True on success
+	 */
+	public static function memberCheckIn($user_id, $group_id)
+	{
+		$welcomeMessage = false;
+		$showWelcomeMessage = Field::oneByName('show_welcome_message')->collectGroupAnswers($group_id);
+		if ($showWelcomeMessage && count(self::oneByUserAndGroup($user_id, $group_id)->toArray()) == 0) {
+			$welcomeMessage = Field::oneByName('welcome_message')->collectGroupAnswers($group_id);
+		}
+		self::hit($user_id, $group_id);
+
+		return $welcomeMessage;
 	}
 }

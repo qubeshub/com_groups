@@ -823,6 +823,11 @@ class Membership extends Base
 
 		\Components\Groups\Models\Member\Role::destroyByUser(User::get('id'));
 
+		// delete recent visit
+		require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'recent.php';
+
+		\Components\Groups\Models\Recent::deleteRecent(User::get('id'), $this->view->group->get('gidNumber'));
+
 		// Log the membership cancellation
 		Log::log(array(
 			'gidNumber' => $this->view->group->get('gidNumber'),

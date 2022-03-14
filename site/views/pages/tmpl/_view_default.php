@@ -56,7 +56,7 @@ $memberAccess = \Hubzero\User\Group\Helper::getPluginAccess($this->group, 'membe
 	<?php
 	foreach ($this->fields as $field)
 	{
-		if ($field->get('access') > $accessLevel)
+		if (($field->get('access') > $accessLevel) || $field->get('disabled'))
 		{
 			continue;
 		}

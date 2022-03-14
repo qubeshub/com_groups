@@ -284,12 +284,12 @@ class Groups extends Base
 			return $this->unapprovedGroupTask();
 		}
 
-		// Record the user
-		if (!User::isGuest() && in_array(User::get('id'), $this->view->group->get('members')))
-		{
-			include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'recent.php';
-
-			Recent::hit(User::get('id'), $this->view->group->get('gidNumber'));
+		// Record the user if not supergroup (replicated in template group.php file for supergroups)
+		if (!$this->view->group->isSuperGroup() && !User::isGuest() && in_array(User::get('id'), $this->view->group->get('members'))) {
+			require_once \Component::path('com_groups') . DS . 'models' . DS . 'recent.php';
+			$this->view->welcomeMessage = Recent::memberCheckIn(User::get('id'), $this->view->group->get('gidNumber'));
+		} else {
+			$this->view->welcomeMessage = false;
 		}
 
 		// Get group pages if any

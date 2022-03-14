@@ -1102,7 +1102,7 @@ HUB.Groups = {
 //-----------------------------------------------------------
 
 jQuery(document).ready(function($){
-		var el = $('#page_menu');
+	var el = $('#page_menu');
 	if (el.length) {
 		el.addClass('js');
 
@@ -1189,6 +1189,19 @@ jQuery(document).ready(function($){
 		e.stopPropagation();
 	});
 
+	// Show welcome message
+	var el = $('#welcome');
+	if (el.length) {
+		$.fancybox.open(el,
+			{
+				autoSize:false,
+				width: 600,
+				height: 'auto',
+				tpl: {
+					wrap:'<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div id="sbox-content" class="fancybox-inner"></div></div></div></div>'
+				}
+			});
+	}
 });
 
 //-----------------------------------------------------------
