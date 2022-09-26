@@ -1506,10 +1506,15 @@ class Groups extends Base
 		// If super group offer alt path outside uploads
 		if ($group->isSuperGroup())
 		{
-			$alt_file_path = str_replace('/uploads', '', $base_path) . DS . $file;
-
-			// If super group can serve files anywhere inside /site/groups/{group_id}
-			$altPathCheck  = PATH_APP . DS . ltrim($alt_file_path);
+			// do not serve gitignore or PHP files
+			if ($file != 'gitignore' && strpos($file, '.php') === false)
+			{
+				// do not allow serving anything from config or .git directory
+				$replace_base = ['/uploads', '/config', '/.git'];
+				$alt_file_path = str_replace($replace_base, '', $base_path) . DS . $file;
+				// If super group can serve files anywhere inside /site/groups/{group_id}
+				$altPathCheck  = PATH_APP . DS . ltrim($alt_file_path);
+			}
 		}
 
 		// Ensure the file exist
