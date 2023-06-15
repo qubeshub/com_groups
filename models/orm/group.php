@@ -230,6 +230,16 @@ class Group extends Relational implements \Hubzero\Search\Searchable
 		return $this->oneToMany(__NAMESPACE__ . '\\Member', 'gidNumber');
 	}
 
+	public function parents()
+	{
+		return $this->manyToMany(__NAMESPACE__ . '\\Group', '#__xgroups_groups', 'child', 'parent');
+	}
+
+	public function children()
+	{
+		return $this->manyToMany(__NAMESPACE__ . '\\Group', '#__xgroups_groups', 'parent', 'child');
+	}
+
 	/**
 	 * Get a list of managers
 	 *
