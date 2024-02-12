@@ -8,6 +8,9 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
+use Qubeshub\User\Group\Helper;
+
 $gparams = new \Hubzero\Config\Registry($this->group->get('params'));
 
 $base = rtrim(str_replace('administrator', '', Request::base()), '/');
@@ -67,6 +70,7 @@ $message .= "\t" . Lang::txt('Access Permissions:') . "\n";
 		'anyone' => 'Any HUB Visitor',
 		'registered' => 'Only Registered User of the HUB',
 		'members' => 'Only Group Members',
+		'managers' => 'Only Group Managers',
 		'nobody' => 'Disabled/Off'
 	);
 
@@ -79,7 +83,7 @@ $message .= "\t" . Lang::txt('Access Permissions:') . "\n";
 		'display_menu_tab' => true
 	));
 
-	$access = \Hubzero\User\Group\Helper::getPluginAccess($this->group);
+	$access = Helper::getPluginAccess($this->group);
 
 	foreach ($group_plugins as $plugin)
 	{

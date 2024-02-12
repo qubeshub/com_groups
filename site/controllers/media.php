@@ -17,6 +17,9 @@ use User;
 use Lang;
 use App;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
+use Qubeshub\User\Group\Helper;
+
 /**
  * Groups controller class
  */
@@ -46,7 +49,7 @@ class Media extends Base
 		$this->authorized = false;
 
 		// Load plugin access groups
-		$pluginAccess = \Hubzero\User\Group\Helper::getPluginAccess($this->group);
+		$pluginAccess = Helper::getPluginAccess($this->group);
 
 		// Ensure we found the group info
 		if (!$this->group || !$this->group->get('gidNumber'))
@@ -71,12 +74,10 @@ class Media extends Base
 		}
 
 		// Check authorization
-		if (!in_array(User::get('id'), $this->group->get('members')))
+		if ((!in_array(User::get('id'), $this->group->get('members')) && ($pluginAccess['files'] == 'members')) ||
+			(!in_array(User::get('id'), $this->group->get('managers')) && ($pluginAccess['files'] == 'managers')))
 		{
-			if ($pluginAccess['files'] == 'members')
-			{
-				$this->_errorHandler(403, Lang::txt('COM_GROUPS_ERROR_NOT_AUTH'));
-			}
+			$this->_errorHandler(403, Lang::txt('COM_GROUPS_ERROR_NOT_AUTH'));
 		}
 		else
 		{

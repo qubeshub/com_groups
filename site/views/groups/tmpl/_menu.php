@@ -63,6 +63,12 @@ defined('_HZEXEC_') or die();
 					$item .= '<span data-icon="&#x' . $section['icon'] . '" class="disabled ' . $class . '">' . $title . '</span>';
 					$item .= '</li>';
 				}
+				elseif ($access == 'managers' && !in_array(User::get('id'), $this->group->get('managers')))
+				{
+					$item  = '<li class="protected managers-only group-' . $class . '-tab" title="' . Lang::txt('This page is restricted to group managers only!') . '">';
+					$item .= '<span data-icon="&#x' . $section['icon'] . '" class="disabled ' . $class . '">' . $title . '</span>';
+					$item .= '</li>';
+				}
 				elseif ($access == 'members' && !in_array(User::get('id'), $this->group->get('members')))
 				{
 					$item  = '<li class="protected members-only group-' . $class . '-tab" title="' . Lang::txt('This page is restricted to group members only!') . '">';

@@ -29,8 +29,12 @@ $levels = array(
 	'anyone'     => Lang::txt('COM_GROUPS_PLUGIN_ANYONE'),
 	'registered' => Lang::txt('COM_GROUPS_PLUGIN_REGISTERED'),
 	'members'    => Lang::txt('COM_GROUPS_PLUGIN_MEMBERS'),
+	'managers'   => Lang::txt('COM_GROUPS_PLUGIN_MANAGERS'),
 	'nobody'     => Lang::txt('COM_GROUPS_PLUGIN_DISABLED')
 );
+
+//plugin manager access capability
+$plugins = array('forms', 'forum', 'members', 'projects', 'publications', 'usage');
 
 //build back link
 $host = Request::getString("HTTP_HOST", "", "SERVER");
@@ -250,7 +254,7 @@ endif;
 											<select name="group_plugin[<?php echo $i; ?>][access]">
 												<?php foreach ($levels as $level => $name): ?>
 													<?php $sel = ($this->group_plugin_access[$this->hub_group_plugins[$i]['name']] == $level) ? 'selected' : ''; ?>
-													<?php if (($this->hub_group_plugins[$i]['name'] == 'overview' && $level != 'nobody') || $this->hub_group_plugins[$i]['name'] != 'overview'): ?>
+													<?php if (($this->hub_group_plugins[$i]['name'] == 'overview' && !in_array($level, array('nobody', 'managers'))) || (!in_array($this->hub_group_plugins[$i]['name'], $plugins) && $level != 'managers') || (in_array($this->hub_group_plugins[$i]['name'], $plugins))): ?>
 														<option <?php echo $sel; ?> value="<?php echo $level; ?>"><?php echo $name; ?></option>
 													<?php endif; ?>
 												<?php endforeach; ?>

@@ -12,6 +12,9 @@ use Hubzero\Base\Model;
 use Hubzero\Base\Model\ItemList;
 use Lang;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
+use Qubeshub\User\Group\Helper;
+
 // include tables
 require_once dirname(__DIR__) . DS . 'tables' . DS . 'page.php';
 require_once dirname(__DIR__) . DS . 'tables' . DS . 'page.hit.php';
@@ -197,7 +200,7 @@ class Page extends Model
 
 		// make sure alias isnt a reserved term
 		$group   = \Hubzero\User\Group::getInstance($this->get('gidNumber'));
-		$plugins = \Hubzero\User\Group\Helper::getPluginAccess($group);
+		$plugins = Helper::getPluginAccess($group);
 		$reserved = array_keys($plugins);
 
 		// make sure dont use a reserved alias on the first level

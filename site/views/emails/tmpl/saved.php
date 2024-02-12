@@ -8,6 +8,9 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
+use Qubeshub\User\Group\Helper;
+
 // build urls
 $base      = rtrim(str_replace('administrator', '', Request::base()), '/');
 $groupLink = $base . '/groups/' . $this->group->get('cn');
@@ -298,6 +301,7 @@ break;
 										'anyone' => 'Any HUB Visitor',
 										'registered' => 'Only Registered User of the HUB',
 										'members' => 'Only Group Members',
+										'managers' => 'Only Group Managers',
 										'nobody' => 'Disabled/Off'
 									);
 
@@ -310,7 +314,7 @@ break;
 										'display_menu_tab' => true
 									));
 
-									$access = \Hubzero\User\Group\Helper::getPluginAccess($this->group);
+									$access = Helper::getPluginAccess($this->group);
 
 									foreach ($group_plugins as $plugin)
 									{
