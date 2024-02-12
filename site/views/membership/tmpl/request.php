@@ -8,6 +8,9 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+$reason_parts = explode("~~~~~", $this->group->get('restrict_msg')); 
+$restrict_msg = $reason_parts[0];
+$response_placeholder = isset($reason_parts[1]) ? $reason_parts[1] : "";
 ?>
 <header id="content-header">
 	<h2><?php echo $this->title; ?></h2>
@@ -39,12 +42,13 @@ defined('_HZEXEC_') or die();
 				<legend><?php echo Lang::txt('COM_GROUPS_JOIN_SECTION_TITLE'); ?></legend>
 
 				<label for="reason">
+					
 					<?php if ($this->group->get('restrict_msg')) { ?>
-						<?php echo $this->group->get('restrict_msg'); ?>
+						<?php echo $restrict_msg; ?>
 					<?php } else { ?>
 						<?php echo Lang::txt('COM_GROUPS_JOIN_REASON'); ?>
 					<?php } ?>
-					<?php echo $this->editor("reason", "", 50, 10, "reason", array('class' => 'minimal no-footer')); ?>
+					<?php echo $this->editor("reason", $response_placeholder, 50, 10, "reason", array('class' => 'minimal no-footer')); ?>
 				</label>
 				<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 				<input type="hidden" name="controller" value="membership" />
