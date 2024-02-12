@@ -34,7 +34,7 @@ $levels = array(
 );
 
 //plugin manager access capability
-$plugins = array('forms', 'forum', 'members', 'projects', 'publications', 'usage');
+$plugins = array('forms', 'forum', 'members', 'projects', 'publications', 'usage', 'files');
 
 //build back link
 $host = Request::getString("HTTP_HOST", "", "SERVER");
