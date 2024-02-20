@@ -7,7 +7,9 @@
 
 namespace Components\Groups\Site\Controllers;
 
-use Hubzero\Component\SiteController;
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
+
+use Qubeshub\Component\SiteController;
 use Hubzero\User\Group;
 use Components\Groups\Helpers\Permissions;
 use Components\Groups\Helpers\View;

@@ -18,6 +18,10 @@ if (!jq) {
 	var jq = $;
 }
 
+String.prototype.nohtml = function () {
+	return this + (this.indexOf('?') == -1 ? '?' : '&') + 'no_html=1';
+};
+
 HUB.Groups = {
 	jQuery: jq,
 
@@ -61,6 +65,40 @@ HUB.Groups = {
 
 		// confirms removal from group
 		HUB.Groups.cancelMembership();
+
+		// add fancybox to request access
+		HUB.Groups.requestAccess();
+	},
+
+	//-----
+
+	requestAccess: function()
+	{
+		var $ = this.jQuery;
+
+		$('li.subnav-membership a.restricted').fancybox({
+			type: 'ajax',
+			autoSize: false,
+			width: 800,
+			height: 'auto',
+			tpl: {
+				wrap:'<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div id="sbox-content" class="fancybox-inner group-request"></div></div></div></div>'
+			},
+			beforeLoad: function() {
+				href = $(this).attr('href');
+				$(this).attr('href', href.nohtml());
+			},
+			afterShow: function() {
+				$('input.btn').on('click', (e) => {
+					e.preventDefault();
+					$('#hubForm').submit();
+					$.fancybox.close();
+					setTimeout(function(){
+						window.location = e.target.getAttribute('href');
+					}, 1000);
+				});
+			}
+		});
 	},
 
 	//-----
