@@ -758,8 +758,6 @@ class Manage extends AdminController
 		// execute command
 		$output = shell_exec($cmd);
 
-		error_log($output);
-
 		// make sure everything went well
 		if (preg_match("/Host key verification failed/uis", $output))
 		{
