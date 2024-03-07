@@ -580,35 +580,35 @@ class Manage extends AdminController
 			Notify::warning(Lang::txt('COM_GROUPS_SUPER_UNABLE_TO_CREATE_DB_PERMISSIONS'));
 		}
 
-		// check to see if we have a super group db config
-		$supergroupDbConfigFile = DS . 'etc' . DS . 'supergroup.conf';
-		if (!file_exists($supergroupDbConfigFile))
-		{
-			Notify::warning(Lang::txt('COM_GROUPS_SUPER_UNABLE_TO_LOAD_CONFIG'));
-		}
-		else
-		{
-			// get hub super group database config file
-			$supergroupDbConfig = include $supergroupDbConfigFile;
+		// // check to see if we have a super group db config
+		// $supergroupDbConfigFile = DS . 'etc' . DS . 'supergroup.conf';
+		// if (!file_exists($supergroupDbConfigFile))
+		// {
+		// 	Notify::warning(Lang::txt('COM_GROUPS_SUPER_UNABLE_TO_LOAD_CONFIG'));
+		// }
+		// else
+		// {
+		// 	// get hub super group database config file
+		// 	$supergroupDbConfig = include $supergroupDbConfigFile;
 
-			// define username, password, and database to be written in config
-			$username = (isset($supergroupDbConfig['username'])) ? $supergroupDbConfig['username'] : '';
-			$password = (isset($supergroupDbConfig['password'])) ? $supergroupDbConfig['password'] : '';
-			$database = 'sg_' . $group->get('cn');
+		// 	// define username, password, and database to be written in config
+		// 	$username = (isset($supergroupDbConfig['username'])) ? $supergroupDbConfig['username'] : '';
+		// 	$password = (isset($supergroupDbConfig['password'])) ? $supergroupDbConfig['password'] : '';
+		// 	$database = 'sg_' . $group->get('cn');
 
-			//write db config in super group
-			$dbConfigFile     = $uploadPath . DS . 'config' . DS . 'db.php';
-			$dbConfigContents = "<?php\n\treturn array(\n\t\t'host'     => 'localhost',\n\t\t'port'     => '',\n\t\t'user' => '{$username}',\n\t\t'password' => '{$password}',\n\t\t'database' => '{$database}',\n\t\t'prefix'   => ''\n\t);";
+		// 	//write db config in super group
+		// 	$dbConfigFile     = $uploadPath . DS . 'config' . DS . 'db.php';
+		// 	$dbConfigContents = "<?php\n\treturn array(\n\t\t'host'     => 'localhost',\n\t\t'port'     => '',\n\t\t'user' => '{$username}',\n\t\t'password' => '{$password}',\n\t\t'database' => '{$database}',\n\t\t'prefix'   => ''\n\t);";
 
-			// write db config file
-			if (!file_exists($dbConfigFile))
-			{
-				if (!file_put_contents($dbConfigFile, $dbConfigContents))
-				{
-					Notify::error(Lang::txt('COM_GROUPS_SUPER_UNABLE_TO_WRITE_CONFIG'));
-				}
-			}
-		}
+		// 	// write db config file
+		// 	if (!file_exists($dbConfigFile))
+		// 	{
+		// 		if (!file_put_contents($dbConfigFile, $dbConfigContents))
+		// 		{
+		// 			Notify::error(Lang::txt('COM_GROUPS_SUPER_UNABLE_TO_WRITE_CONFIG'));
+		// 		}
+		// 	}
+		// }
 
 		// log super group change
 		Log::log(array(
@@ -646,15 +646,16 @@ class Manage extends AdminController
 		}
 
 		// make sure this is production hub
-		$environment = strtolower(Config::get('application_env', 'development'));
-		if (substr($environment, 0, 10) != 'production')
-		{
-			return;
-		}
+		// $environment = strtolower(Config::get('application_env', 'development'));
+		// if (substr($environment, 0, 10) != 'production')
+		// {
+		// 	return;
+		// }
 
 		// build group & project names
 		$host        = explode('.', $_SERVER['HTTP_HOST']);
-		$groupName   = strtolower($host[0]);
+		// $groupName   = strtolower($host[0]);
+		$groupName = 'devtest';
 		$projectName = $group->get('cn');
 
 		// instantiate new gitlab client
@@ -750,10 +751,14 @@ class Manage extends AdminController
 			return;
 		}
 
+		// url
+		$url_bits = parse_url($gitLabProject['http_url_to_repo']);
+		$gitLabUrl = $url_bits["scheme"] . '://' . $groupName . ':' . $gitlabKey . '@' . $url_bits["host"] . $url_bits["path"];
+
 		// build command to run via shell
 		// this will init the git repo, make the initial commit and push to the repo management machine
 		$cmd  = 'sh ' . dirname(dirname(__DIR__)) . DS . 'admin' . DS . 'assets' . DS . 'scripts' . DS . 'gitlab_setup.sh ';
-		$cmd .= $uploadPath  . ' ' . $authorInfo . ' ' . $gitLabProject['ssh_url_to_repo'] . ' 2>&1';
+		$cmd .= $uploadPath  . ' ' . $authorInfo . ' ' . $gitLabUrl . ' 2>&1';
 
 		// execute command
 		$output = shell_exec($cmd);
