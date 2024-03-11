@@ -81,6 +81,8 @@ class Gitlab
 
 	/**
 	 * Is GitLab repo management on with API url and token set?
+	 * 
+	 * @return  boolean
 	 */
 	public function validate() 
 	{
