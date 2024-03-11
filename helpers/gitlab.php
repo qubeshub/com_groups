@@ -249,7 +249,7 @@ class Gitlab
 	public function request($method, $resource, $params = array())
 	{
 		$method = '_' . strtolower($method) . 'Request';
-		$response = call_user_func(array(self, $method), ...array($resource, $params));
+		$response = call_user_func(array(__CLASS__, $method), ...array($resource, $params));
 		if (array_key_exists('message', $response)) {
 			switch ($response['message']) {
 				case '401 Unauthorized':
