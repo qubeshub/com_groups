@@ -626,22 +626,8 @@ class Manage extends AdminController
 	 */
 	private function _handSuperGroupGitlab($group)
 	{
-		// get needed config vars
-		$gitlabManagement = $this->config->get('super_gitlab', 0);
-		$gitlabUrl        = $this->config->get('super_gitlab_url', '');
-		$gitlabKey        = $this->config->get('super_gitlab_key', '');
-
-		// do we have repo management on
-		// dont output message
-		if (!$gitlabManagement)
-		{
-			return;
-		}
-
-		// make sure we have a url and key if repot management is on
-		if ($gitlabManagement && ($gitlabUrl == '' || $gitlabKey == ''))
-		{
-			Notify::warning(Lang::txt('COM_GROUPS_GITLAB_NOT_SETUP'));
+		$client = new Gitlab();
+		if (!$client->validate()) {
 			return;
 		}
 
@@ -658,9 +644,6 @@ class Manage extends AdminController
 		$groupName = 'devtest';
 		$projectName = $group->get('cn');
 
-		// instantiate new gitlab client
-		$client = new Gitlab($gitlabUrl, $gitlabKey);
-
 		// Search for group in Gitlab
 		$gitLabGroup = $client->groups($groupName);
 
@@ -671,6 +654,11 @@ class Manage extends AdminController
 				'name' => $groupName,
 				'path' => strtolower($groupName)
 			));
+			// Possible error check here
+		}
+		elseif (array_key_exists('message', $gitLabGroup)) {
+			Notify::error("Error requesting groups: " . $gitLabGroup['message']);
+			return;
 		}
 		elseif (count($gitLabGroup) > 1)
 		{  // If search returns more than one match, return with error.
@@ -703,6 +691,12 @@ class Manage extends AdminController
 				'wiki_enabled'           => true,
 				'snippets_enabled'       => true,
 			));
+			// Possible error check here
+		}
+		elseif (array_key_exists('message', $gitLabGroup))
+		{
+			Notify::error("Error requesting projects: " . $gitLabGroup['message']);
+			return;
 		}
 		elseif ($gitLabProject)
 		{  // search result must match hub group name to gitlab project name exactly or create new gitlab project
@@ -730,6 +724,7 @@ class Manage extends AdminController
 					'wiki_enabled'           => true,
 					'snippets_enabled'       => true,
 				));
+				// Possible error checking here
 			}
 		}
 		else
@@ -753,7 +748,7 @@ class Manage extends AdminController
 
 		// url
 		$url_bits = parse_url($gitLabProject['http_url_to_repo']);
-		$gitLabUrl = $url_bits["scheme"] . '://' . $groupName . ':' . $gitlabKey . '@' . $url_bits["host"] . $url_bits["path"];
+		$gitLabUrl = $url_bits["scheme"] . '://' . $groupName . ':' . $client->get('token') . '@' . $url_bits["host"] . $url_bits["path"];
 
 		// build command to run via shell
 		// this will init the git repo, make the initial commit and push to the repo management machine
@@ -762,13 +757,7 @@ class Manage extends AdminController
 
 		// execute command
 		$output = shell_exec($cmd);
-
-		// make sure everything went well
-		if (preg_match("/Host key verification failed/uis", $output))
-		{
-			Notify::warning(Lang::txt('COM_GROUPS_GITLAB_NOT_SETUP_SSH'));
-			return;
-		}
+		// Possible error checking here if git push fails (likely will have failed before this)
 
 		// protect master branch
 		// allows only admins to accept Merge Requests
@@ -776,6 +765,11 @@ class Manage extends AdminController
 			'id'     => $gitLabProject['id'],
 			'branch' => 'master'
 		));
+		if (array_key_exists('message', $protected))
+		{
+			Notify::error("Error on branch protection: " . $protected['message']);
+			return;
+		}
 	}
 
 	/**
@@ -801,6 +795,12 @@ class Manage extends AdminController
 		if (empty($ids))
 		{
 			return $this->cancelTask();
+		}
+
+		// Get GitLab client
+		$client = new Gitlab();
+		if (!$client->validate()) {
+			return;
 		}
 
 		// vars to hold results of pull
@@ -861,7 +861,6 @@ class Manage extends AdminController
 				$gitlabKey = $this->config->get('super_gitlab_key', '');
 
 				// instantiate new gitlab client
-				$client        = new Gitlab($gitlabUrl, $gitlabKey);
 				$gitlabGroup   = $client->group($groupName);
 				$gitlabProject = $client->project($projectName);
 
@@ -872,9 +871,13 @@ class Manage extends AdminController
 					continue;
 				}
 
+				// url
+				$url_bits = parse_url($gitLabProject['http_url_to_repo']);
+				$gitLabUrl = $url_bits["scheme"] . '://' . $groupName . ':' . $gitlabKey . '@' . $url_bits["host"] . $url_bits["path"];
+
 				// setup stage environment
 				$cmd  = 'sh ' . dirname(dirname(__DIR__)). DS . 'admin' . DS . 'assets' . DS . 'scripts' . DS . 'gitlab_setup_stage.sh ';
-				$cmd .= str_replace('/' . $group->get('gidNumber'), '', $uploadPath) . ' ' . $group->get('gidNumber') . ' ' . $group->get('cn') . ' ' . $gitlabProject['ssh_url_to_repo'] . ' 2>&1';
+				$cmd .= str_replace('/' . $group->get('gidNumber'), '', $uploadPath) . ' ' . $group->get('gidNumber') . ' ' . $group->get('cn') . ' ' . $gitLabUrl . ' 2>&1';
 
 				// execute command
 				$output = shell_exec($cmd);
@@ -888,7 +891,18 @@ class Manage extends AdminController
 				$user = Component::params('com_update')->get('system_user', 'hubadmin');
 			}
 
-			// The tasks and command to be perofmred
+			// Check to make sure using correct token
+			$output = shell_exec($cmd . "git remote -v");
+			$url_bits = parse_url(explode("\t", explode(" ", $output)[1])[1]);
+			$gitLabKey = $client->get('token');
+			if ($url_bits["pass"] !== $gitLabKey) {
+				$gitLabUrl = $url_bits["scheme"] . '://' . $url_bits["user"] . ':' . $gitLabKey . '@' . $url_bits["host"] . $url_bits["path"];
+				$rcmd  = 'sh ' . dirname(dirname(__DIR__)) . DS . 'admin' . DS . 'assets' . DS . 'scripts' . DS . 'gitlab_reset_remote.sh ';
+				$rcmd .= $uploadPath  . ' ' . $gitLabUrl . ' 2>&1';
+				$output = shell_exec($rcmd);
+			}
+
+			// The tasks and command to be performed
 			$task = 'group';
 			$museCmd = 'update';
 

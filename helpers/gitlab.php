@@ -17,6 +17,13 @@ class Gitlab
 	private $url;
 
 	/**
+	 * Is GitLab repo managed?
+	 * 
+	 * @var	boolean
+	 */
+	private $active;
+	
+	/**
 	 * Default Guzzle options/ headers
 	 *
 	 * @var array
@@ -42,16 +49,62 @@ class Gitlab
 	 *
 	 * @return void
 	 */
-	public function __construct($url, $token)
+	public function __construct()
 	{
-		$this->url    = rtrim($url, DS);
-		$this->token  = $token;
+		$config = \Component::params('com_groups');  
+
+		$this->active = $config->get('super_gitlab', 0);
+		$this->url    = rtrim($config->get('super_gitlab_url', ''), DS);
+		$this->token  = $config->get('super_gitlab_key', '');
 		$this->options = array(
 			'verify' => false,
-			'headers' => array('PRIVATE-TOKEN' => $token)
+			'headers' => array('PRIVATE-TOKEN' => $this->token),
+			'http_errors' => false
 		);
 		$this->client = new \GuzzleHttp\Client;
 
+	}
+
+	/**
+	 * Method to get private variable
+	 *
+	 * @param   string  $property  Name of variable to retrieve
+	 * @return  mixed   Value of the variable
+	 */
+	public function get($property)
+	{
+		if (isset($this->$property))
+		{
+			return $this->$property;
+		}
+	}
+
+	/**
+	 * Is GitLab repo management on with API url and token set?
+	 */
+	public function validate() 
+	{
+		// do we have repo management on
+		// make sure we have a url and key if repot management is on
+		if (!$this->active || ($this->active && ($this->url == '' || $this->token == '')))
+		{
+			Notify::warning(Lang::txt('COM_GROUPS_GITLAB_NOT_SETUP'));
+			return false;
+		}
+
+		// Check for valid token
+		$response = $this->client->request('GET', $this->url . DS . 'personal_access_tokens' . DS . 'self', $this->options);
+		$json_response = json_decode($response->getBody(), true);
+		if (array_key_exists('message', $json_response)) {
+			switch ($json_response['message']) {
+				case '401 Unauthorized':
+					Notify::warning(Lang::txt('COM_GROUPS_GITLAB_TOKEN_PROBLEM'));
+					return false;
+				break;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -61,7 +114,7 @@ class Gitlab
 	 */
 	public function groups($groupName)
 	{
-		return $this->_getRequest('groups', $groupName);
+		return $this->request('GET', 'groups', $groupName);
 	}
 
 	/**
@@ -90,7 +143,7 @@ class Gitlab
 	 */
 	public function createGroup($params = array())
 	{
-		return $this->_postRequest('groups', $params);
+		return $this->request('POST', 'groups', $params);
 	}
 
 	/**
@@ -100,7 +153,7 @@ class Gitlab
 	 */
 	public function projects($projectName)
 	{
-		return $this->_getRequest('projects', $projectName);
+		return $this->request('GET', 'projects', $projectName);
 	}
 
 	/**
@@ -129,7 +182,7 @@ class Gitlab
 	 */
 	public function createProject($params = array())
 	{
-		return $this->_postRequest('projects', $params);
+		return $this->request('POST', 'projects', $params);
 	}
 
 	/**
@@ -141,7 +194,7 @@ class Gitlab
 	public function protectBranch($params = array())
 	{
 		$resource = 'projects' . DS . $params['id'] . DS . 'repository' . DS . 'branches' . DS . $params['branch'] . DS . 'protect';
-		return $this->_putRequest($resource, array());
+		return $this->request('PUT', $resource, array());
 	}
 
 	/**
@@ -189,5 +242,19 @@ class Gitlab
 		$response = $this->client->request('PUT', $this->url . DS . $resource, $requestOptions);
 
 		return json_decode($response->getBody(), true);
+	}
+
+	public function request($method, $resource, $params = array())
+	{
+		$method = '_' . strtolower($method) . 'Request';
+		$response = call_user_func(array(self, $method), ...array($resource, $params));
+		if (array_key_exists('message', $response)) {
+			switch ($response['message']) {
+				case '401 Unauthorized':
+					$response['message'] = "Gitlab API token either doesn't exist or has expired";
+				break;
+			}
+		}
+		return $response;
 	}
 }
