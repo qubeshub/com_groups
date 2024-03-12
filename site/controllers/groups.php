@@ -1552,7 +1552,7 @@ class Groups extends Base
 		$contentServer->disposition('attachment');
 		$contentServer->acceptranges(false);
 
-		// Do we need to manually set mime type?
+		// Do we need to manually set mime type? Also set disposition inline for pdfs
 		switch ($extension)
 		{
 			case 'css':
@@ -1560,6 +1560,9 @@ class Groups extends Base
 				break;
 			case 'js':
 				$contentServer->setContentType('application/javascript');
+				break;
+			case 'pdf':
+				$contentServer->disposition('inline');
 				break;
 			default:
 				break;
