@@ -650,20 +650,11 @@ class Media extends Base
 		//get folder
 		$folder = Request::getString('folder', '');
 
-		// make sure we have an active folder
-		if ($folder == '')
+		// make sure we have an active folder or a path with base "/uploads" and doesn't have any ".." in it
+		if (($folder == '') ||
+			(preg_match('/^\/uploads(?!.*\/\.\.).*$/', $folder) == 0))
 		{
 			$folder = '/uploads';
-		}
-
-		// regular groups can only access inside /uploads
-		if ($this->group->get('type') != 3)
-		{
-			$pathInfo = pathinfo($folder);
-			if ($pathInfo['dirname'] != '/uploads')
-			{
-				$folder = '/uploads';
-			}
 		}
 
 		// Build the upload path if it doesn't exist
