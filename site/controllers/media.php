@@ -112,15 +112,10 @@ class Media extends Base
 
 		$this->view->activeFolder = '/' . trim($this->view->activeFolder, '/');
 
-		// regular groups can only access inside /uploads
-		//if (!$this->group->isSuperGroup())
-		//{
-			$pathInfo = pathinfo($this->view->activeFolder);
-			if ($pathInfo['dirname'] != '/uploads')
-			{
-				$this->view->activeFolder = '/uploads';
-			}
-		//}
+		if (preg_match('/^\/uploads(?!.*\/\.\.).*$/', $this->view->activeFolder) == 0)
+		{
+			$this->view->activeFolder = '/uploads';
+		}
 
 		// make sure we have a path
 		$this->_createGroupFolder($this->path);
@@ -650,9 +645,8 @@ class Media extends Base
 		//get folder
 		$folder = Request::getString('folder', '');
 
-		// make sure we have an active folder or a path with base "/uploads" and doesn't have any ".." in it
-		if (($folder == '') ||
-			(preg_match('/^\/uploads(?!.*\/\.\.).*$/', $folder) == 0))
+		// make sure we have a path with first base "/uploads" and doesn't have any ".."
+		if (preg_match('/^\/uploads(?!.*\/\.\.).*$/', $folder) == 0)
 		{
 			$folder = '/uploads';
 		}
@@ -1171,14 +1165,10 @@ class Media extends Base
 	public function moveFolderTask()
 	{
 		// get request vars
-		$folder = Request::getString('folder', '');
+		$this->view->folder = Request::getString('folder', '');
 
 		// default folder to have open
 		$this->view->activeFolder = '/uploads';
-		//if ($this->group->get('type') == 3)
-		//{
-		//	$this->view->activeFolder = '/';
-		//}
 
 		// get list of folders
 		$folders    = Filesystem::directoryTree($this->path, '.', 10);
@@ -1197,7 +1187,6 @@ class Media extends Base
 		// pass vars to view
 		$this->view->group      = $this->group;
 		$this->view->folderList = $folderList;
-		$this->view->folder     = $folder;
 
 		//render layout
 		$this->view
@@ -1221,7 +1210,7 @@ class Media extends Base
 		$folder  = Request::getString('folder', '');
 
 		// return path
-		$returnFolder = $this->path . $folder;
+		$returnFolder = $folder;
 
 		// get file info
 		$info = pathinfo($current);

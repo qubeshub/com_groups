@@ -174,7 +174,7 @@ HUB.GroupsMediaList = {
 							data: $(this).serialize(),
 							success: function( data, status, jqXHR )
 							{
-								HUB.GroupsMediaList.callParent( data );
+								HUB.GroupsMediaList.refreshParent( data );
 								$.fancybox.close();
 							},
 							error: function( status, data, jqXHR )
@@ -280,13 +280,13 @@ HUB.GroupsMediaList = {
 
 		//find button in file details which actually performs action
 		var button = element.next('.file-details').find('.action-' + action);
-		
+				
 		// if we found a button click it
 		if (button.length)
 		{
-			if (button.data('events'))
+			if ($._data(button[0], "events"))
 			{
-				if (button.data('events').click)
+				if ($._data(button[0], "events")['click'])
 				{
 					button.trigger('click');
 				}
@@ -347,4 +347,6 @@ jQuery.fn.selText = function() {
 
 jQuery(document).ready(function($){
 	HUB.GroupsMediaList.initialize();
+
+	$(".more-content").fancybox()
 });

@@ -56,16 +56,12 @@
 	}
 	.action-addfolder {
 		display: inline-block;
-		width: 1em;
 		overflow: hidden;
 		white-space: nowrap;
 	}
 	.action-addfolder:hover {
 		border: none;
 		text-decoration: none;
-	}
-	.action-addfolder:before {
-		margin-right: 2em;
 	}
 
 /* Folder Tree List */
@@ -377,6 +373,25 @@
 		text-align: center;
 		min-height: 25px;
 		margin: 0 !important;
+	}
+	.file-help {
+		font-size: 12px;
+		margin-top: -0.6em;
+		float: right;
+	}
+	.file-help:before {
+		content: "\f059";
+		width: 16px;
+		height: 16px;
+		font-size: 16px;
+		font-family: 'Fontcons';
+		color: #000;
+		margin-right: 0.2em;
+		font-weight: normal;
+	}
+	.help-content {
+		padding: 1em 2em;
+    	max-width: 500px;
 	}
 
 /* File uplaoder */

@@ -38,7 +38,6 @@ $ckeditorQuery = '&type=' . $type . '&CKEditor=' . $ckeditor . '&CKEditorFuncNum
 	}
 </script>
 
-
 <div class="upload-filelist-toolbar">
 	<div class="toolbar cf">
 		<?php
@@ -55,6 +54,7 @@ $ckeditorQuery = '&type=' . $type . '&CKEditor=' . $ckeditor . '&CKEditorFuncNum
 				<li><a data-folder="<?php echo $this->escape($folder); ?>" href="javascript:(void);"><?php echo $this->escape($segment); ?></a></li>
 			<?php endforeach; ?>
 		</ul>
+		<a class="file-help more-content" href="#info-panel" title="Click to learn more">Help</a>
 		<div class="buttons"></div>
 	</div>
 	<div class="filelist-headers">
@@ -64,6 +64,9 @@ $ckeditorQuery = '&type=' . $type . '&CKEditor=' . $ckeditor . '&CKEditorFuncNum
 				<div class="modified"><?php echo Lang::txt('COM_GROUPS_MEDIA_MODIFIED'); ?></div>
 			</li>
 		</ul>
+	</div>
+	<div style="display:none;">
+		<div class="help-content" id="info-panel"><?php echo Lang::txt('COM_GROUPS_MEDIA_HELP'); ?></div>
 	</div>
 </div>
 

@@ -2247,6 +2247,7 @@ fieldset.assignment label {
 	position: absolute;
 	right: 0;
 	box-shadow: 0 0 5px rgba(0,0,0,0.7);
+	background-color: white;
 }
 .floating-iframe-container {
 	-webkit-transition: all 0.3s ease-in-out;
