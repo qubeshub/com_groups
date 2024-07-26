@@ -71,7 +71,8 @@ HUB.GroupsMediaBrowser = {
 								
 								//redirect
 								//window.location.href = newHref;
-								window.location.reload();
+								//window.location.reload();
+								HUB.GroupsMediaBrowser.refreshAndOpenFolder( data );
 							},
 							error: function( status, data, jqXHR )
 							{
