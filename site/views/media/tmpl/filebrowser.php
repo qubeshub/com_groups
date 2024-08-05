@@ -39,7 +39,7 @@ $ckeditorQuery = '&type='.$type.'&CKEditor=' . $ckeditor . '&CKEditorFuncNum=' .
 			<div class="title"><?php echo Lang::txt('COM_GROUPS_MEDIA_GROUP_FILES'); ?></div>
 			<?php if ($this->authorized) : ?>
 				<div class="buttons">
-					<a href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=media&task=addfolder&tmpl=component'); ?>" class="icon-add action-addfolder">Add Folder</a>
+					<a href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=media&task=addfolder&tmpl=component&protected=true'); ?>" class="icon-add action-addfolder">Add Folder</a>
 				</div>
 			<?php endif; ?>
 		</div>
