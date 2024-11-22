@@ -8,6 +8,9 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
+use Qubeshub\User\Group\Helper;
+
 if (!function_exists('isSystemUser'))
 {
 	function isSystemUser( $userid )
@@ -47,8 +50,12 @@ else
 {
 	$accessLevel = (!User::isGuest()) ? 1 : 0;
 }
+
+//are we a group manager
+$isManager = (in_array(User::get('id'), $this->group->get('managers'))) ? true : false;
+
 //get the members plugin access for this group
-$memberAccess = \Hubzero\User\Group\Helper::getPluginAccess($this->group, 'members');
+$memberAccess = Helper::getPluginAccess($this->group, 'members');
 ?>
 
 <div class="group-content-header">
@@ -100,7 +107,7 @@ $memberAccess = \Hubzero\User\Group\Helper::getPluginAccess($this->group, 'membe
 	?>
 </div>
 
-<?php if ($memberAccess == 'anyone' || ($memberAccess == 'registered' && !User::isGuest()) || ($memberAccess == 'members' && $isMember)) : ?>
+<?php if ($memberAccess == 'anyone' || ($memberAccess == 'registered' && !User::isGuest()) || ($memberAccess == 'members' && $isMember) || ($memberAccess == 'managers' && $isManager)) : ?>
 	<div class="group-content-header">
 		<h3><?php echo Lang::txt('COM_GROUPS_OVERVIEW_MEMBERS_HEADING'); ?></h3>
 		<div class="group-content-header-extra">
