@@ -14,6 +14,7 @@ class Renderer
 	public $content = null;
 	public $name    = null;
 	public $params  = null;
+	public $allMods = null;
 
 	public function __construct()
 	{
