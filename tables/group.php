@@ -67,7 +67,7 @@ class Group extends Table
 			$query = $db->getQuery(true);
 			$query->select('id');
 			$query->from('#__assets');
-			$query->where('name = ' . $db->quote('com_groups'));
+			$query->where('name', '=', $db->quote('com_groups'));
 
 			// Get the asset id from the database.
 			$db->setQuery($query);
