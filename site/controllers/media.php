@@ -222,7 +222,7 @@ class Media extends Base
 			$nodeToggle   = '<span class="tree-folder-toggle-spacer"></span>';
 			$childrenHtml = '';
 
-			if (@is_array($treeLevel['children']))
+			if (isset($treeLevel['children'] && is_array($treeLevel['children']))
 			{
 				$nodeToggle   = '<a class="tree-folder-toggle" href="javascript:void(0);"></a>';
 				$childrenHtml = $this->_buildFolderTreeHtml($treeLevel['children']);
@@ -283,7 +283,7 @@ class Media extends Base
 			$text .= ' ' . array_pop($parts);
 
 			$options .= '<option value="'.$value.'">' . $text.'</option>';
-			if (@is_array($treeLevel['children']))
+			if (isset($treeLevel['children']) && is_array($treeLevel['children']))
 			{
 				$options .= $this->_buildFolderTreeSelectOptionList($treeLevel['children']);
 			}
@@ -337,7 +337,7 @@ class Media extends Base
 				foreach ($files as $k => $file)
 				{
 					$fileInfo = pathinfo($file);
-					$ext      = strtolower($fileInfo['extension']);
+					$ext      = isset($fileInfo['extension']) ? strtolower($fileInfo['extension']) : '';
 					if ($this->view->type == 'images' && !in_array($ext, array('jpg','jpeg','png','gif','bmp','tiff')))
 					{
 						unset($files[$k]);
