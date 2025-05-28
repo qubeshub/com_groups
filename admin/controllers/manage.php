@@ -492,7 +492,7 @@ class Manage extends AdminController
 		$srcTplPath = null;
 
 		$db = \App::get('db');
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$query->select('s.id, s.home, s.template, s.params, e.protected');
 		$query->from('#__template_styles as s');
 		$query->where('s.client_id', '=', 0);
