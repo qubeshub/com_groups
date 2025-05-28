@@ -127,7 +127,7 @@ class Gitlab
 	 */
 	public function group($name)
 	{
-		foreach ($this->groups() as $group)
+		foreach ($this->groups($name) as $group)
 		{
 			if ($group['name'] == $name)
 			{
@@ -166,7 +166,7 @@ class Gitlab
 	 */
 	public function project($name)
 	{
-		foreach ($this->projects() as $project)
+		foreach ($this->projects($name) as $project)
 		{
 			if ($project['name'] == $name)
 			{
