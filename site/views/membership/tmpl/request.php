@@ -56,8 +56,6 @@ $response_placeholder = isset($reason_parts[1]) ? $reason_parts[1] : "";
 				<input type="hidden" name="task" value="dorequest" />
 				<?php echo Html::input('token'); ?>
 			</fieldset>
-			<div class="clear"></div>
-
 			<p class="submit">
 				<input class="btn btn-success" type="submit" value="<?php echo Lang::txt('COM_GROUPS_JOIN_BTN_TEXT'); ?>" />
 			</p>
