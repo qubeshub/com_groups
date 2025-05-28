@@ -909,7 +909,7 @@ class Manage extends AdminController
 			$sudo =  '/usr/bin/sudo -u ' . $user . ' ';
 
 			// Determines the path to muse and run the group update muse command
-			$cmd .= $sudo . PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $museCmd . ' --format=json';
+			$cmd .= $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $museCmd . ' --format=json';
 
 			// Execute and format the output
 			$output = shell_exec($cmd);
@@ -1024,7 +1024,7 @@ class Manage extends AdminController
 			$sudo =  '/usr/bin/sudo -u ' . $user . ' ';
 
 			// Determines the path to muse and run the group update muse command
-			$cmd .= $sudo . PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';
+			$cmd .= $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';
 
 			// this will run a "git pull --rebase origin master"
 			$output = shell_exec($cmd);
@@ -1033,7 +1033,7 @@ class Manage extends AdminController
 			{
 				$museCmd = 'migrate';
 				$cmd = "cd {$uploadPath} && ";
-				$cmd .= $sudo . PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';
+				$cmd .= $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';
 
 				$output .= shell_exec($cmd);
 			}
