@@ -130,7 +130,7 @@ $this->css()
 				$reasonforjoin = '';
 				if ($reason)
 				{
-					$reasonforjoin = stripslashes($reason->reason);
+					$reasonforjoin = stripslashes($reason->reason == null ? '' : $reason->reason);
 				}
 			}
 
