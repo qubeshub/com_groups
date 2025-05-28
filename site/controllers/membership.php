@@ -407,7 +407,7 @@ class Membership extends Base
 			// build message object and send
 			$message->setSubject($subject)
 					->addFrom($from['email'], $from['name'])
-					->setTo($from['email'])
+					->setTo($from['email'], $from['name'])
 					->setBcc($groupInvitees)
 					->addHeader('X-Mailer', 'PHP/' . phpversion())
 					->addHeader('X-Component', 'com_groups')
@@ -496,8 +496,7 @@ class Membership extends Base
 			// build message object and send
 			$message->setSubject($subject)
 					->addFrom($from['email'], $from['name'])
-					->setTo($from['email'])
-					->setBcc(array($mbr['email']))
+					->setTo(array($mbr['email']))
 					->addHeader('X-Mailer', 'PHP/' . phpversion())
 					->addHeader('X-Component', 'com_groups')
 					->addHeader('X-Component-Object', 'group_inviteemail')
@@ -746,7 +745,8 @@ class Membership extends Base
 		// build message object and send
 		$message->setSubject($subject)
 				->addFrom($from['email'], $from['name'])
-				->setTo($managers)
+				->setTo($from['email'], $from['name'])
+				->setBcc($managers)
 				->addHeader('X-Mailer', 'PHP/' . phpversion())
 				->addHeader('X-Component', 'com_groups')
 				->addHeader('X-Component-Object', 'group_invite_accepted')
@@ -1194,7 +1194,8 @@ class Membership extends Base
 		// build message object and send
 		$message->setSubject($subject)
 				->addFrom($from['email'], $from['name'])
-				->setTo($managers)
+				->setTo($from['email'], $from['name'])
+				->setBcc($managers)
 				->addHeader('X-Mailer', 'PHP/' . phpversion())
 				->addHeader('X-Component', 'com_groups')
 				->addHeader('X-Component-Object', 'group_membership_requested')

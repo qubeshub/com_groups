@@ -324,7 +324,8 @@ class Pages
 		// build message object and send
 		$message->setSubject($subject)
 				->addFrom($from['email'], $from['name'])
-				->setTo($approvers)
+				->setTo($from['email'], $from['name'])
+				->setBcc($approvers)
 				->addHeader('X-Mailer', 'PHP/' . phpversion())
 				->addHeader('X-Component', 'com_groups')
 				->addHeader('X-Component-Object', $type . '_approval')
@@ -394,7 +395,8 @@ class Pages
 		// build message object and send
 		$message->setSubject($subject)
 				->addFrom($from['email'], $from['name'])
-				->setTo($managers)
+				->setTo($from['email'], $from['name'])
+				->setBcc($managers)
 				->addHeader('X-Mailer', 'PHP/' . phpversion())
 				->addHeader('X-Component', 'com_groups')
 				->addHeader('X-Component-Object', $type . '_approved')

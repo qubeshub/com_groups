@@ -1147,7 +1147,8 @@ class Groups extends Base
 		// Build message object and send
 		$message->setSubject($subject)
 				->addFrom($from['email'], $from['name'])
-				->setTo($groupMembers)
+				->setTo($from['email'], $from['name'])
+				->setBcc($groupMembers)
 				->addHeader('X-Mailer', 'PHP/' . phpversion())
 				->addHeader('X-Component', 'com_groups')
 				->addHeader('X-Component-Object', 'group_deleted')
