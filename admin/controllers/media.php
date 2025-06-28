@@ -92,7 +92,7 @@ class Media extends AdminController
 	}
 
 	/**
-	 * Upload a file
+	 * Download a file
 	 *
 	 * @return  void
 	 */
