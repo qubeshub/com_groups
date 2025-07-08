@@ -1206,7 +1206,14 @@ class Membership extends Base
 		$this->setNotification(Lang::txt('COM_GROUPS_INVITE_REQUEST_FORWARDED'), 'passed');
 
 		// Push through to the groups listing
-		App::redirect($url);
+		if (!Request::getInt('no_html', 0)) {
+			App::redirect($url);
+		} else {
+			echo json_encode(array(
+				'success' => true,
+				'redirect' => $url
+			));
+		}
 	}
 
 	/**

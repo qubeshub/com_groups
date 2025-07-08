@@ -92,10 +92,6 @@ HUB.Groups = {
 				$('input.btn').on('click', (e) => {
 					e.preventDefault();
 					$('#hubForm').submit();
-					$.fancybox.close();
-					setTimeout(function(){
-						window.location = e.target.getAttribute('href');
-					}, 1000);
 				});
 			}
 		});
