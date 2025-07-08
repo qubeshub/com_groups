@@ -499,7 +499,7 @@ class Manage extends AdminController
 		$query->where('e.enabled', '=', 1);
 		$query->where('s.home', '=', 1);
 		$query->leftJoin('#__extensions as e', 'e.element', 's.template');
-		$query->where('e.type', '=', $db->quote('template'));
+		$query->where('e.type', '=', 'template');
 		$query->where('e.client_id', '=', 's.client_id');
 		$db->setQuery($query);
 		$template = $db->loadObject();
