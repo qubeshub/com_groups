@@ -427,40 +427,28 @@ class Media extends Base
 		// vars for later
 		$message = '';
 
-		// get request vars
-		$ckeditor     = Request::getString('CKEditor', '', 'get');
-		$ckeditorFunc = Request::getString('CKEditorFuncNum', '', 'get');
+		// do upload
+		$upload = $this->doUpload();
 
-		// if dont have a message we are good to go
-		if ($message == '')
-		{
-			// do upload
-			$upload = $this->doUpload();
-
+		if (!$upload->error) {
 			// get file name
 			$file     = $upload->file;
 			$fileInfo = pathinfo($file);
 
-			//remvoe unnessary success message
-			if (!$upload->error)
-			{
-				$upload->message = '';
-			}
-
 			// build url to return to ckeditor
 			$url  = ($_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 			$url .= $_SERVER['HTTP_HOST'] . DS . 'groups' . DS . $this->group->get('cn') . DS . 'File:' . $fileInfo['basename'];
-		}
-
-		// do we have a message
-		if (isset($upload) && $upload->message)
-		{
-			$message = $upload->message;
+		} else {
+			$message = $upload->error;
 		}
 
 		// return to ckeditor
-		echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($ckeditorFunc, '$url', '$message');</script>";
-		return;
+		echo json_encode(array(
+			'uploaded' => ($message) ? 0 : 1,
+			'url'      => ($message) ? '' : $url,
+			'error'    => array('message' => $message)
+		));
+		die();
 	}
 
 	/**
