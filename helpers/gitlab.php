@@ -207,8 +207,8 @@ class Gitlab
 	 */
 	private function _getRequest($resource, $ResourceName)
 	{
-		// Get response restricted by current owned, i.e. the current Gitlab users that owns the API key that is configured on this hub
-		$response = $this->client->request('GET', $this->url . DS . $resource . '?owned=true&search=' . $ResourceName, $this->options);
+		// Get response restricted by maintainer access of the current Gitlab API key bot (MAKE SURE GROUP TOKEN ACCESS IS AT MAINTAINER LEVEL OR HIGHER)
+		$response = $this->client->request('GET', $this->url . DS . $resource . '?min_access_level=40&search=' . $ResourceName, $this->options);
 		return json_decode($response->getBody(), true);
 	}
 

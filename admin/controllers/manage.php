@@ -582,7 +582,7 @@ class Manage extends AdminController
 			Notify::warning(Lang::txt('COM_GROUPS_SUPER_UNABLE_TO_CREATE_DB_PERMISSIONS'));
 		}
 
-		// // check to see if we have a super group db config
+		// check to see if we have a super group db config
 		$supergroupDbConfigFile = DS . 'etc' . DS . 'supergroup.conf';
 		if (!file_exists($supergroupDbConfigFile))
 		{
@@ -642,24 +642,24 @@ class Manage extends AdminController
 
 		// build group & project names
 		$host        = explode('.', $_SERVER['HTTP_HOST']);
-		$groupName   = strtolower($host[0]);
-		$projectName = $group->get('cn');
+		$groupName   = 'hub-' . strtolower($host[0]);
+		$projectName = 'sg_' . $group->get('cn');
 
 		// Search for group in Gitlab
 		$gitLabGroup = $client->groups($groupName);
 
 		// create group if doesnt exist
-		if ($gitLabGroup == null)
+		if (array_key_exists('message', $gitLabGroup)) {
+			Notify::error("Error requesting groups: " . $gitLabGroup['message']);
+			return;
+		}
+		elseif (empty($gitLabGroup))
 		{
 			$gitLabGroup = $client->createGroup(array(
 				'name' => $groupName,
-				'path' => strtolower($groupName)
+				'path' => $groupName
 			));
 			// Possible error check here
-		}
-		elseif (array_key_exists('message', $gitLabGroup)) {
-			Notify::error("Error requesting groups: " . $gitLabGroup['message']);
-			return;
 		}
 		elseif (count($gitLabGroup) > 1)
 		{  // If search returns more than one match, return with error.
@@ -681,7 +681,12 @@ class Manage extends AdminController
 		$gitLabProject = $client->projects($projectName);
 
 		// create project if doesnt exist
-		if ($gitLabProject == null)
+		if (array_key_exists('message', $gitLabProject))
+		{
+			Notify::error("Error requesting projects: " . $gitLabProject['message']);
+			return;
+		}
+		elseif (empty($gitLabProject))
 		{
 			$gitLabProject = $client->createProject(array(
 				'namespace_id'           => $gitLabGroup['id'],
@@ -693,11 +698,6 @@ class Manage extends AdminController
 				'snippets_enabled'       => true,
 			));
 			// Possible error check here
-		}
-		elseif (array_key_exists('message', $gitLabGroup))
-		{
-			Notify::error("Error requesting projects: " . $gitLabGroup['message']);
-			return;
 		}
 		elseif ($gitLabProject)
 		{  // search result must match hub group name to gitlab project name exactly or create new gitlab project
@@ -714,7 +714,7 @@ class Manage extends AdminController
 				}
 			}
 			// create project if doesnt exist
-			if ($gitLabProject == null)
+			if (empty($gitLabProject))
 			{
 				$gitLabProject = $client->createProject(array(
 					'namespace_id'           => $gitLabGroup['id'],
@@ -749,7 +749,7 @@ class Manage extends AdminController
 
 		// url
 		$url_bits = parse_url($gitLabProject['http_url_to_repo']);
-		$gitLabUrl = $url_bits["scheme"] . '://' . $groupName . ':' . $client->get('token') . '@' . $url_bits["host"] . $url_bits["path"];
+		$gitLabUrl = $url_bits["scheme"] . '://oauth2:' . $client->get('token') . '@' . $url_bits["host"] . $url_bits["path"];
 
 		// build command to run via shell
 		// this will init the git repo, make the initial commit and push to the repo management machine
@@ -854,8 +854,8 @@ class Manage extends AdminController
 				// build group & project names
 				$host        = explode('.', $_SERVER['HTTP_HOST']);
 				$tld         = array_pop($host);
-				$groupName   = strtolower(end($host));
-				$projectName = $group->get('cn');
+				$groupName   = 'hub-' . strtolower(end($host));
+				$projectName = 'sg_' . $group->get('cn');
 
 				// get gitlab config
 				$gitlabUrl = $this->config->get('super_gitlab_url', '');
@@ -874,7 +874,7 @@ class Manage extends AdminController
 
 				// url
 				$url_bits = parse_url($gitLabProject['http_url_to_repo']);
-				$gitLabUrl = $url_bits["scheme"] . '://' . $groupName . ':' . $gitlabKey . '@' . $url_bits["host"] . $url_bits["path"];
+				$gitLabUrl = $url_bits["scheme"] . '://oauth2:' . $gitlabKey . '@' . $url_bits["host"] . $url_bits["path"];
 
 				// setup stage environment
 				$cmd  = 'sh ' . dirname(dirname(__DIR__)). DS . 'admin' . DS . 'assets' . DS . 'scripts' . DS . 'gitlab_setup_stage.sh ';
