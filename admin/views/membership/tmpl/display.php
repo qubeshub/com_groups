@@ -176,12 +176,12 @@ $this->css()
 				</td>
 				<td class="priority-3">
 					<span>
-						<?php echo $this->escape(stripslashes($row->username)); ?>
+						<?php echo $this->escape(stripslashes($row->username) ?? ''); ?>
 					</span>
 				</td>
 				<td class="priority-5">
 					<span>
-						<?php echo $this->escape(stripslashes($row->email)); ?>
+						<?php echo $this->escape(stripslashes($row->email ?? '')); ?>
 					</span>
 				</td>
 				<td>
