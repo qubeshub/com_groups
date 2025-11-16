@@ -42,7 +42,6 @@ $response_placeholder = isset($reason_parts[1]) ? $reason_parts[1] : "";
 				<legend><?php echo Lang::txt('COM_GROUPS_JOIN_SECTION_TITLE'); ?></legend>
 
 				<label for="reason">
-					
 					<?php if ($this->group->get('restrict_msg')) { ?>
 						<?php echo $restrict_msg; ?>
 					<?php } else { ?>
