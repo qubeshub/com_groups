@@ -10,6 +10,8 @@ defined('_HZEXEC_') or die();
 
 $this->css()
      ->js()
+     ->css('forum.css', 'plg_groups_forum')
+     ->js('forum.js', 'plg_groups_forum')
      ->js('jquery.cycle2', 'system');
 
 //tag editor
@@ -19,6 +21,7 @@ $tf = Event::trigger('hubzero.onGetMultiEntry', array(array('tags', 'tags', 'act
 $params =  Component::params('com_groups');
 $emailForumComments = $params->get('email_forum_comments', 0);
 $autoEmailResponses  = $params->get('email_member_groupsidcussionemail_autosignup', 0);
+$discussionEmailAutoSub = (int)$this->group->get('discussion_email_autosubscribe', 0);
 
 //default logo
 $default_logo = $this->img('group_default_logo.png');
@@ -275,19 +278,62 @@ endif;
 						<fieldset>
 							<legend><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_SECTION_LEGEND'); ?> <span class="optional"><?php echo Lang::txt('COM_GROUPS_OPTIONAL'); ?></span></legend>
 
-							<div class="form-group form-check">
-								<label for="discussion_email_autosubscribe" class="form-check-label">
-									<input type="checkbox" class="option form-check-input" name="discussion_email_autosubscribe" id="discussion_email_autosubscribe" value="1" <?php
-										if ($this->group->get('discussion_email_autosubscribe', null) == 1
-										 || ($this->group->get('discussion_email_autosubscribe', null) == null && $autoEmailResponses)):
-											echo ' checked="checked"';
-										endif;
-										?> />
-									<strong><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_AUTO_SUBSCRIBE'); ?></strong> <br />
-									<span class="indent">
-										<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTINGS_FORUM_AUTO_SUBSCRIBE_NOTE'); ?>
-									</span>
-								</label>
+							<div id="discussion_email_autosubscribe_settings" class="form-group">
+								<!-- Submits value=0 when checkbox is unchecked (disabled by JS when checked) -->
+								<input type="hidden" name="discussion_email_autosubscribe"
+									   id="discussion_email_autosubscribe_hidden" value="0" />
+
+								<div class="form-group">
+									<input type="checkbox"
+										   class="edit-forum-options-receive-emails"
+										   id="discussion_email_autosubscribe_toggle"
+										   <?php if ($discussionEmailAutoSub > 0): echo 'checked="checked"'; endif; ?> />
+									<label for="discussion_email_autosubscribe_toggle">
+										<strong><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_AUTO_SUBSCRIBE'); ?></strong>
+									</label>
+								</div>
+
+								<div id="discussion_email_subscribe_options"
+									 <?php // if ($discussionEmailAutoSub <= 0): echo 'style="display:none"'; endif; ?>>
+									<div><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_AND_SEND'); ?></div>
+									<div class="form-group">
+										<input type="radio" name="discussion_email_autosubscribe"
+											   class="edit-forum-options-immediate"
+											   id="discussion_email_autosubscribe_immediate" value="1"
+											   <?php if ($discussionEmailAutoSub <= 1): echo 'checked="checked"'; endif; ?>
+											   <?php if ($discussionEmailAutoSub <= 0): echo 'disabled="disabled"'; endif; ?> />
+										<label for="discussion_email_autosubscribe_immediate">
+											<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_IMMEDIATELY'); ?>
+										</label>
+									</div>
+									<div class="form-group">
+										<input type="radio" name="discussion_email_autosubscribe"
+											   class="edit-forum-options-digest"
+											   id="discussion_email_autosubscribe_digest" value="2"
+											   <?php if ($discussionEmailAutoSub >= 2): echo 'checked="checked"'; endif; ?>
+											   <?php if ($discussionEmailAutoSub <= 0): echo 'disabled="disabled"'; endif; ?> />
+										<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_AS_PART_OF'); ?>
+										<select name="discussion_email_autosubscribe"
+												class="edit-forum-options-frequency"
+												id="discussion_email_autosubscribe_frequency"
+												<?php if ($discussionEmailAutoSub < 2): echo 'disabled="disabled"'; endif; ?>>
+											<option value="2" <?php if ($discussionEmailAutoSub == 2): echo 'selected="selected"'; endif; ?>>
+												<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_DAILY'); ?>
+											</option>
+											<option value="3" <?php if ($discussionEmailAutoSub == 3): echo 'selected="selected"'; endif; ?>>
+												<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_WEEKLY'); ?>
+											</option>
+											<option value="4" <?php if ($discussionEmailAutoSub == 4): echo 'selected="selected"'; endif; ?>>
+												<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_MONTHLY'); ?>
+											</option>
+										</select>
+										<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_DIGEST'); ?>
+									</div>
+								</div>
+
+								<span>
+									<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTINGS_FORUM_AUTO_SUBSCRIBE_NOTE'); ?>
+								</span>
 							</div>
 						</fieldset>
 					</fieldset>
