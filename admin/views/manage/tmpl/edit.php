@@ -118,12 +118,12 @@ $this->js()
 
 							<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_GROUPS_CN_HINT'); ?>">
 								<label for="field-cn"><?php echo Lang::txt('COM_GROUPS_CN'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-								<input type="text" name="group[cn]" id="field-cn" class="required" <?php if ($this->group->cn) { echo ' readonly="readonly"'; } ?> value="<?php echo $this->escape(stripslashes($this->group->cn)); ?>" />
+								<input type="text" name="group[cn]" id="field-cn" class="required" <?php if ($this->group->cn) { echo ' readonly="readonly"'; } ?> value="<?php echo $this->escape(stripslashes($this->group->cn ?? '')); ?>" />
 								<span class="hint"><?php echo Lang::txt('COM_GROUPS_CN_HINT'); ?></span>
 							</div>
 							<div class="input-wrap">
 								<label for="field-description"><?php echo Lang::txt('COM_GROUPS_TITLE'); ?>:</label><br />
-								<input type="text" name="group[description]" id="field-description" value="<?php echo $this->escape(stripslashes($this->group->description)); ?>" />
+								<input type="text" name="group[description]" id="field-description" value="<?php echo $this->escape(stripslashes($this->group->description ?? '')); ?>" />
 							</div>
 							<div class="input-wrap">
 								<label for="field-logo"><?php echo Lang::txt('COM_GROUPS_LOGO'); ?>:</label><br />
