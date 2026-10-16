@@ -340,6 +340,9 @@ class Pages extends AdminController
 	 */
 	public function deleteTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get request vars
 		$ids = Request::getArray('id', array());
 
@@ -590,6 +593,9 @@ class Pages extends AdminController
 	 */
 	public function markScannedTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// make sure we are approvers
 		if (!Helpers\Pages::isPageApprover())
 		{
@@ -639,6 +645,9 @@ class Pages extends AdminController
 	 */
 	public function scanAgainTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// make sure we are approvers
 		if (!Helpers\Pages::isPageApprover())
 		{
@@ -679,6 +688,9 @@ class Pages extends AdminController
 	 */
 	public function errorsCheckAgainTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// make sure we are approvers
 		if (!Helpers\Pages::isPageApprover())
 		{
@@ -718,6 +730,9 @@ class Pages extends AdminController
 	 */
 	public function approveTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// make sure we are approvers
 		if (!Helpers\Pages::isPageApprover())
 		{

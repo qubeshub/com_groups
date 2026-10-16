@@ -532,6 +532,9 @@ class Pages extends Base
 	 */
 	public function setStateTask($state = 1, $status = 'published')
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		//get request vars
 		$pageid = Request::getInt('pageid', 0, 'get');
 
@@ -649,6 +652,10 @@ class Pages extends Base
 	 */
 	public function reorderTask()
 	{
+		// Check for request forgeries (groups.js posts to the list's data-url,
+		// which carries the token in its query string)
+		Request::checkToken(['get', 'post']);
+
 		//get the request vars
 		$pagesOrder = Request::getArray('order', array(), 'post');
 
@@ -683,6 +690,9 @@ class Pages extends Base
 	 */
 	public function setHomeTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get request vars
 		$pageid = Request::getInt('pageid', 0, 'get');
 
@@ -815,6 +825,9 @@ class Pages extends Base
 	 */
 	public function restoreTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get reqest vars
 		$pageid  = Request::getInt('pageid', 0, 'get');
 		$version = Request::getInt('version', null, 'get');

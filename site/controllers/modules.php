@@ -150,6 +150,9 @@ class Modules extends Base
 	 */
 	public function saveTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get request vars
 		$module = Request::getArray('module', array(), 'post');
 		$menu   = Request::getArray('menu', array(), 'post');
@@ -356,6 +359,9 @@ class Modules extends Base
 	 */
 	public function setStateTask($state = 1, $status = 'published')
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		//get request vars
 		$moduleid = Request::getInt('moduleid', 0, 'get');
 

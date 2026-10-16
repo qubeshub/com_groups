@@ -904,6 +904,9 @@ class Media extends Base
 	 */
 	public function extractFileTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Incoming file
 		$file = trim(Request::getString('file', '', 'get'));
 

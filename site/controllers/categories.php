@@ -127,6 +127,9 @@ class Categories extends Base
 	 */
 	public function saveTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get request vars
 		$category = Request::getArray('category', array(), 'post');
 
@@ -193,6 +196,9 @@ class Categories extends Base
 	 */
 	public function deleteTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get request vars
 		$categoryid = Request::getInt('categoryid', 0);
 
