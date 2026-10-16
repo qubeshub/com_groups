@@ -1035,6 +1035,15 @@ class Groups extends Base
 			return $this->loginTask(Lang::txt('COM_GROUPS_DELETE_MUST_BE_LOGGED_IN'));
 		}
 
+		// Require POST to prevent accidental deletion by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('COM_GROUPS_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Check to make sure we have  cname
 		if (!$this->cn)
 		{

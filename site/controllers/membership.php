@@ -617,6 +617,27 @@ class Membership extends Base
 			return;
 		}
 
+		// Accepting is done by a posted form. A link followed from an invitation
+		// e-mail, or the return from logging in, arrives by GET and gets a page
+		// whose button posts it (carrying the invitation token, if any). The
+		// token is validated below exactly as before; this only decides which
+		// request may act.
+		if (Request::method() !== 'POST')
+		{
+			$this->_buildTitle();
+			$this->_buildPathway();
+
+			$this->view
+				->set('title', Lang::txt('COM_GROUPS_ACCEPT_INVITE') . ': ' . $this->view->group->get('description'))
+				->set('token', $token)
+				->setLayout('accept')
+				->display();
+			return;
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		//get current members and invitees
 		$members  = $this->view->group->get('members');
 		$invitees = $this->view->group->get('invitees');
@@ -807,6 +828,15 @@ class Membership extends Base
 			return;
 		}
 
+		// Require POST to prevent accidental cancellation by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('COM_GROUPS_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		//get request vars
 		$return = strtolower(trim(Request::getString('return', '', 'get')));
 
@@ -984,6 +1014,24 @@ class Membership extends Base
 		//if this group is open just make a member
 		if ($this->view->group->get('join_policy') == 0)
 		{
+			// Joining is done by a posted form. A link to this task (an older
+			// page or template, or the return from logging in) arrives by GET
+			// and gets a page whose button posts it.
+			if (Request::method() !== 'POST')
+			{
+				$this->_buildTitle();
+				$this->_buildPathway();
+
+				$this->view
+					->set('title', Lang::txt('COM_GROUPS_TOOLBAR_JOIN') . ': ' . $this->view->group->get('description'))
+					->setLayout('join')
+					->display();
+				return;
+			}
+
+			// Check for request forgeries
+			Request::checkToken();
+
 			$this->view->group->add('members', array(User::get('id')));
 			$this->view->group->remove('applicants', array(User::get('id')));
 			$this->view->group->remove('invitees', array(User::get('id')));
