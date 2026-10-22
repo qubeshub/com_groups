@@ -1557,7 +1557,7 @@ class Groups extends Base
 		$contentServer = new \Hubzero\Content\Server();
 		$contentServer->filename(PATH_APP . DS . $file_path);
 		$contentServer->disposition('attachment');
-		$contentServer->acceptranges(false);
+		$contentServer->acceptranges(true);
 
 		// Do we need to manually set mime type? Also set disposition inline for pdfs
 		switch ($extension)
