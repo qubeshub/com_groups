@@ -123,7 +123,7 @@ $this->js()
 							</div>
 							<div class="input-wrap">
 								<label for="field-description"><?php echo Lang::txt('COM_GROUPS_TITLE'); ?>:</label><br />
-								<input type="text" name="group[description]" id="field-description" value="<?php echo $this->escape(stripslashes($this->group->description)); ?>" />
+								<input type="text" name="group[description]" id="field-description" value="<?php echo $this->escape(stripslashes($this->group->description ?? '')); ?>" />
 							</div>
 							<div class="input-wrap">
 								<label for="field-logo"><?php echo Lang::txt('COM_GROUPS_LOGO'); ?>:</label><br />
