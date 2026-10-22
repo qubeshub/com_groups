@@ -439,7 +439,7 @@ class Media extends Base
 			$url  = ($_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 			$url .= $_SERVER['HTTP_HOST'] . DS . 'groups' . DS . $this->group->get('cn') . DS . 'File:' . $fileInfo['basename'];
 		} else {
-			$message = $upload->error;
+			$message = $upload->message;
 		}
 
 		// return to ckeditor
