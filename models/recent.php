@@ -9,6 +9,7 @@ namespace Components\Groups\Models;
 
 use Hubzero\Database\Relational;
 use Components\Groups\Models\Orm\Field;
+use Date;
 
 /**
  * Recently visited groups

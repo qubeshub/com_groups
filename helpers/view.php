@@ -16,6 +16,7 @@ use Route;
 use Lang;
 use User;
 use App;
+use Component;
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
 use Qubeshub\User\Group\Helper;

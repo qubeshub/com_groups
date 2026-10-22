@@ -28,6 +28,9 @@ use User;
 use Date;
 use Lang;
 use App;
+use Component;
+use Plugin;
+use Session;
 
 /**
  * Groups controller class
