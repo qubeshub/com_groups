@@ -545,7 +545,7 @@ class Media extends Base
 
 		// file type is ok type
 		$fileInfo = pathinfo($file['name']);
-		if ($allowedExtensions && !in_array(strtolower($fileInfo['extension']), $allowedExtensions))
+		if ($allowedExtensions && !in_array(strtolower($fileInfo['extension'] ?? ''), $allowedExtensions))
 		{
 			$these = implode(', ', $allowedExtensions);
 			$returnObj->error   = true;
@@ -590,7 +590,7 @@ class Media extends Base
 		$file['name'] = str_replace(' ', '_', $file['name']);
 		$fileInfo     = pathinfo($file['name']);
 		$filename     = $fileInfo['filename'];
-		$ext          = $fileInfo['extension'];
+		$ext          = $fileInfo['extension'] ?? '';
 
 		while (file_exists($groupUploadsFolder . DS . $filename . '.' . $ext))
 		{
@@ -731,7 +731,7 @@ class Media extends Base
 		//check to make sure we have an allowable extension
 		$pathinfo = pathinfo($file);
 		$filename = $pathinfo['filename'];
-		$ext = $pathinfo['extension'];
+		$ext = $pathinfo['extension'] ?? '';
 		if ($allowedExtensions && !in_array(strtolower($ext), $allowedExtensions))
 		{
 			$these = implode(', ', $allowedExtensions);
@@ -972,6 +972,16 @@ class Media extends Base
 			exit();
 		}
 
+		// A rename must not sidestep the upload extension allowlist: no
+		// dot-files and only a type the uploader would have accepted.
+		$allowedExtensions = array_values(array_filter(explode(',', \Component::params('com_media')->get('upload_extensions'))));
+		$newExt = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+		if ($name[0] == '.' || ($allowedExtensions && !in_array($newExt, $allowedExtensions)))
+		{
+			header('HTTP/1.1 500 ' . Lang::txt('COM_GROUPS_MEDIA_INVALID_FILE', implode(', ', $allowedExtensions)));
+			exit();
+		}
+
 		// build new file
 		$newFile = $fileInfo['dirname'] . DS . $name;
 
@@ -1056,6 +1066,7 @@ class Media extends Base
 		$this->logActivity('deleted', str_replace($this->path, '', $file));
 
 		// Are we deleting through the editor file browser?
+		$listdir      = Request::getInt('listdir', $this->group->get('gidNumber'), 'get');
 		$editorName   = Request::getString('editor', '', 'get');
 		$editorFunc   = Request::getInt('editorFuncNum', 0, 'get');
 		$type         = Request::getString('type', 'image', 'get');
@@ -1402,7 +1413,7 @@ class Media extends Base
 				strtoupper('COM_GROUPS_ACTIVITY_' . $key . '_' . $action),
 				trim($item[0], '/'),
 				trim($item[1], '/'),
-				'<a href="' . $url . '">' . $this->group->get('description') . '</a>'
+				'<a href="' . $url . '">' . htmlspecialchars((string) $this->group->get('description'), ENT_QUOTES, 'UTF-8') . '</a>'
 			);
 		}
 		else
@@ -1410,7 +1421,7 @@ class Media extends Base
 			$description = Lang::txt(
 				strtoupper('COM_GROUPS_ACTIVITY_' . $key . '_' . $action),
 				trim($item, '/'),
-				'<a href="' . $url . '">' . $this->group->get('description') . '</a>'
+				'<a href="' . $url . '">' . htmlspecialchars((string) $this->group->get('description'), ENT_QUOTES, 'UTF-8') . '</a>'
 			);
 		}
 
