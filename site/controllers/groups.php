@@ -7,11 +7,8 @@
 
 namespace Components\Groups\Site\Controllers;
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
-
 use Hubzero\Config\Registry;
 use Hubzero\User\Group;
-use Qubeshub\User\Group\Helper;
 use Hubzero\Utility\Sanitize;
 use Components\Groups\Models\Page;
 use Components\Groups\Helpers;
@@ -118,17 +115,17 @@ class Groups extends Base
 			$this->view->mygroups = array_filter($this->view->mygroups);
 
 			// Get groups user may be interested in
-			$this->view->interestinggroups = Helper::getGroupsMatchingTagString(
+			$this->view->interestinggroups = Group\Helper::getGroupsMatchingTagString(
 				$mytags,
 				\Hubzero\User\Helper::getGroups(User::get('id'))
 			);
 		}
 
 		// Get the popular groups
-		$this->view->populargroups  = Helper::getPopularGroups(3);
+		$this->view->populargroups  = Group\Helper::getPopularGroups(3);
 
 		// Get featured groups
-		$this->view->featuredgroups = Helper::getFeaturedGroups($this->config->get('intro_featuredgroups_list', ''));
+		$this->view->featuredgroups = Group\Helper::getFeaturedGroups($this->config->get('intro_featuredgroups_list', ''));
 
 		// Set some vars for view
 		$this->view->config = $this->config;
@@ -542,7 +539,7 @@ class Groups extends Base
 		));
 
 		// Get plugin access
-		$this->view->group_plugin_access = Helper::getPluginAccess($this->view->group);
+		$this->view->group_plugin_access = Group\Helper::getPluginAccess($this->view->group);
 
 		// Build the title
 		$this->_buildTitle();
@@ -1513,7 +1510,7 @@ class Groups extends Base
 		if ($this->active == 'wiki')
 		{
 			// Get access level for wiki
-			$access = Helper::getPluginAccess($group, 'wiki');
+			$access = Group\Helper::getPluginAccess($group, 'wiki');
 
 			// Check to make sure user has access to wiki section
 			if (($access == 'members' && !in_array(User::get('id'), $group->get('members')))
@@ -1568,7 +1565,7 @@ class Groups extends Base
 		elseif ($this->active == 'blog')
 		{
 			// Get access setting of group blog
-			$access = Helper::getPluginAccess($group, 'blog');
+			$access = Group\Helper::getPluginAccess($group, 'blog');
 
 			// Make sure user has access to blog
 			if (($access == 'members' && !in_array(User::get('id'), $group->get('members')))
@@ -1578,7 +1575,7 @@ class Groups extends Base
 			}
 
 			// Make sure we have a group id of the proper length
-			$groupID = Helper::niceidformat($group->get('gidNumber'));
+			$groupID = Group\Helper::niceidformat($group->get('gidNumber'));
 
 			// Build path to blog folder
 			$base_path = $this->config->get('uploadpath') . DS . $groupID . DS . 'blog';
@@ -1590,7 +1587,7 @@ class Groups extends Base
 		else
 		{
 			// Get access level for overview or other group pages
-			$access = Helper::getPluginAccess($group, 'overview');
+			$access = Group\Helper::getPluginAccess($group, 'overview');
 
 			// Check to make sure we can access it
 			if (($access == 'members' && !in_array(User::get('id'), $group->get('members')))

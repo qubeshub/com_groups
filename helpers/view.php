@@ -18,9 +18,6 @@ use User;
 use App;
 use Component;
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
-use Qubeshub\User\Group\Helper;
-
 class View
 {
 	/**
@@ -59,7 +56,7 @@ class View
 			$tab = Request::getString('active', 'overview');
 
 			//get group plugin access
-			$pluginAccess = Helper::getPluginAccess($group);
+			$pluginAccess = \Hubzero\User\Group\Helper::getPluginAccess($group);
 
 			// If active tab not overview and an not one of available tabs
 			if ($tab != 'overview' && !in_array($tab, array_keys($pluginAccess)))
@@ -149,7 +146,7 @@ class View
 			$start  = Request::getInt('limitstart', 0);
 
 			//get group plugin access
-			$pluginAccess = Helper::getPluginAccess($group);
+			$pluginAccess = \Hubzero\User\Group\Helper::getPluginAccess($group);
 
 			// Limit the records if we're on the overview page
 			$limit = ($limit == 0) ? 'all' : $limit;
@@ -259,7 +256,7 @@ class View
 		$view->sections        = self::getSections();
 		$view->sectionsContent = self::getSectionsContent($group);
 		$view->pages           = $pages;
-		$view->pluginAccess    = Helper::getPluginAccess($group);
+		$view->pluginAccess    = \Hubzero\User\Group\Helper::getPluginAccess($group);
 
 		// return template
 		return $view->loadTemplate();
@@ -275,7 +272,7 @@ class View
 	public static function buildRecursivePageMenu($group, $pageArray)
 	{
 		// get overview section access
-		$access = Helper::getPluginAccess($group, 'overview');
+		$access = \Hubzero\User\Group\Helper::getPluginAccess($group, 'overview');
 
 		$out = '';
 		if (count($pageArray) > 0)
@@ -387,7 +384,7 @@ class View
 			$userHasAccess = true;
 
 			//get overview page access
-			$overviewPageAccess = Helper::getPluginAccess($group, 'overview');
+			$overviewPageAccess = \Hubzero\User\Group\Helper::getPluginAccess($group, 'overview');
 
 			//if user isnt logged in and access level is set to registered users or members only
 			if (User::isGuest() && ($overviewPageAccess == 'registered' || $overviewPageAccess == 'members'))

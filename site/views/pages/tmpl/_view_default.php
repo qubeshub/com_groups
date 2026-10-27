@@ -8,9 +8,6 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
-use Qubeshub\User\Group\Helper;
-
 if (!function_exists('isSystemUser'))
 {
 	function isSystemUser( $userid )
@@ -55,7 +52,7 @@ else
 $isManager = (in_array(User::get('id'), $this->group->get('managers'))) ? true : false;
 
 //get the members plugin access for this group
-$memberAccess = Helper::getPluginAccess($this->group, 'members');
+$memberAccess = \Hubzero\User\Group\Helper::getPluginAccess($this->group, 'members');
 ?>
 
 <div class="group-content-header">

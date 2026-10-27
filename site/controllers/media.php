@@ -18,9 +18,6 @@ use Lang;
 use App;
 use Config;
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'User' . DS . 'Group' . DS . 'Helper.php';
-use Qubeshub\User\Group\Helper;
-
 /**
  * Groups controller class
  */
@@ -55,7 +52,7 @@ class Media extends Base
 		$this->authorized = false;
 
 		// Load plugin access groups
-		$this->pluginAccess = Helper::getPluginAccess($this->group);
+		$this->pluginAccess = \Hubzero\User\Group\Helper::getPluginAccess($this->group);
 
 		// Ensure we found the group info
 		if (!$this->group || !$this->group->get('gidNumber'))
