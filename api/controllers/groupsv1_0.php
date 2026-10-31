@@ -376,6 +376,7 @@ class Groupsv1_0 extends ApiController
 		if ($plugins)
 		{
 			$isMember = (in_array(User::get('id'), $record->get('members')));
+			$isManager = (in_array(User::get('id'), $record->get('managers')));
 
 			foreach ($plugins as $section)
 			{
@@ -395,6 +396,12 @@ class Groupsv1_0 extends ApiController
 				}
 
 				if (!$isMember && $pluginAccess[$section['name']] == 'members')
+				{
+					continue;
+				}
+
+				// QUBES: a tab can be restricted to group managers
+				if (!$isManager && $pluginAccess[$section['name']] == 'managers')
 				{
 					continue;
 				}
