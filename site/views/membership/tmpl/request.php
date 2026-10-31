@@ -8,7 +8,12 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+// Shown in a pop-up (the group templates load it with no_html=1)
+$modal = Request::getInt('no_html', 0);
 ?>
+<?php if ($modal) { ?>
+<h2><?php echo $this->title; ?></h2>
+<?php } else { ?>
 <header id="content-header">
 	<h2><?php echo $this->title; ?></h2>
 
@@ -22,6 +27,7 @@ defined('_HZEXEC_') or die();
 		</ul>
 	</div><!-- / #content-header-extra -->
 </header>
+<?php } ?>
 
 <section class="main section">
 	<div class="section-inner">

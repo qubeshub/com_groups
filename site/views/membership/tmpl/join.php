@@ -16,7 +16,13 @@ if (!empty($this->return))
 {
 	$joinUrl .= '&return=' . urlencode(base64_encode($this->return));
 }
+
+// Shown in a pop-up (the group templates load it with no_html=1)
+$modal = Request::getInt('no_html', 0);
 ?>
+<?php if ($modal) { ?>
+<h2><?php echo $this->escape($this->title); ?></h2>
+<?php } else { ?>
 <header id="content-header">
 	<h2><?php echo $this->escape($this->title); ?></h2>
 
@@ -30,17 +36,25 @@ if (!empty($this->return))
 		</ul>
 	</div><!-- / #content-header-extra -->
 </header>
+<?php } ?>
 
 <section class="main section">
 	<div class="section-inner">
 		<p class="info"><?php echo Lang::txt('COM_GROUPS_JOIN_CONFIRM', $this->escape($this->group->get('description'))); ?></p>
-		<p>
+		<p class="join-actions">
+			<?php // Posts the page's shared action form (and its token), so it also works from the pop-up ?>
 			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($joinUrl); ?>" class="btn btn-success">
 				<?php echo Lang::txt('COM_GROUPS_TOOLBAR_JOIN'); ?>
 			</button>
-			<a class="btn btn-secondary" href="<?php echo Route::url($base); ?>">
-				<?php echo Lang::txt('JCANCEL'); ?>
-			</a>
+			<?php if ($modal) { ?>
+				<button type="button" class="btn btn-secondary fancybox-close-action">
+					<?php echo Lang::txt('JCANCEL'); ?>
+				</button>
+			<?php } else { ?>
+				<a class="btn btn-secondary" href="<?php echo Route::url($base); ?>">
+					<?php echo Lang::txt('JCANCEL'); ?>
+				</a>
+			<?php } ?>
 		</p>
 	</div>
 </section>
