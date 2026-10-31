@@ -9,6 +9,13 @@
 defined('_HZEXEC_') or die();
 
 $base = 'index.php?option=' . $this->option . '&cn=' . $this->group->get('cn');
+
+// Carry the (already validated) return URL through the posted join
+$joinUrl = $base . '&task=join';
+if (!empty($this->return))
+{
+	$joinUrl .= '&return=' . urlencode(base64_encode($this->return));
+}
 ?>
 <header id="content-header">
 	<h2><?php echo $this->escape($this->title); ?></h2>
@@ -28,7 +35,7 @@ $base = 'index.php?option=' . $this->option . '&cn=' . $this->group->get('cn');
 	<div class="section-inner">
 		<p class="info"><?php echo Lang::txt('COM_GROUPS_JOIN_CONFIRM', $this->escape($this->group->get('description'))); ?></p>
 		<p>
-			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&task=join'); ?>" class="btn btn-success">
+			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($joinUrl); ?>" class="btn btn-success">
 				<?php echo Lang::txt('COM_GROUPS_TOOLBAR_JOIN'); ?>
 			</button>
 			<a class="btn btn-secondary" href="<?php echo Route::url($base); ?>">

@@ -960,7 +960,19 @@ class Membership extends Base
 		// Return
 		require_once \Component::path('com_support') . DS . 'helpers' . DS . 'utilities.php';
 		$return = Request::getString('return', '');
-		$return = (\Components\Support\Helpers\Utilities::isBase64($return) ? base64_decode($return) : $return);
+		// Route::url() leaves a base64 '+' unencoded in the links it builds, and
+		// the query string then decodes it to a space, so put it back first
+		$encoded = str_replace(' ', '+', $return);
+		if (\Components\Support\Helpers\Utilities::isBase64($encoded))
+		{
+			$return = base64_decode($encoded);
+		}
+
+		// Only ever send the user back somewhere on this hub
+		if ($return && !\Hubzero\Utility\Uri::isInternal($return))
+		{
+			$return = '';
+		}
 
 		// Check if they're logged in. A posted join can't be replayed after
 		// logging in, so come back to the page that asks to join.
@@ -969,6 +981,7 @@ class Membership extends Base
 			return $this->loginTask(
 				Lang::txt('COM_GROUPS_INVITE_MUST_BE_LOGGED_IN_TO_JOIN'),
 				'index.php?option=' . $this->_option . '&cn=' . $this->cn . '&task=join'
+					. ($return ? '&return=' . urlencode(base64_encode($return)) : '')
 			);
 		}
 
@@ -1045,6 +1058,7 @@ class Membership extends Base
 
 				$this->view
 					->set('title', Lang::txt('COM_GROUPS_TOOLBAR_JOIN') . ': ' . $this->view->group->get('description'))
+					->set('return', $return)
 					->setLayout('join')
 					->display();
 				return;
