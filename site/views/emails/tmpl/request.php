@@ -18,7 +18,10 @@ $message .= "\t".$this->user->get('name')."\n";
 $message .= "\t\t". $this->user->get('username') .' ('. $this->user->get('email') . ')';
 if ($this->group->get('join_policy') == 1)
 {
-	$message .= "\r\n" . Lang::txt('COM_GROUPS_JOIN_REQUEST_APPROVE_BECAUSE').' '."\r\n". stripslashes($this->row->reason);
+	// The reason is HTML from the editor; this email is plain text
+	$reason = preg_replace('#<br\s*/?>|</(p|div|li|h[1-6])>#i', "\n", (string) $this->row->reason);
+	$reason = trim(html_entity_decode(strip_tags($reason), ENT_QUOTES, 'UTF-8'));
+	$message .= "\r\n" . Lang::txt('COM_GROUPS_JOIN_REQUEST_APPROVE_BECAUSE').' '."\r\n". $reason;
 }
 $message .= "\n".'---------------------------------------------------------------------------------------'."\n\n";
 $message .= Lang::txt('COM_GROUPS_JOIN_REQUEST_LINK')."\n";

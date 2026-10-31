@@ -1197,7 +1197,10 @@ class Membership extends Base
 		$row = new Reason($this->database);
 		$row->uidNumber = User::get('id');
 		$row->gidNumber = $this->view->group->get('gidNumber');
-		$row->reason    = \Hubzero\Utility\Sanitize::clean(trim(Request::getString('reason', Lang::txt('GROUPS_NO_REASON_GIVEN'), 'post')));
+		// The reason is written in the editor: keep its HTML, purified the same
+		// way as the group's restricted-join message (Sanitize::clean() would
+		// re-encode its entities, & -> &amp;amp;)
+		$row->reason    = \Hubzero\Utility\Sanitize::html(trim(Request::getString('reason', Lang::txt('GROUPS_NO_REASON_GIVEN'), 'post', 'none', 2)));
 		$row->date      = Date::toSql();
 
 		// Check and store the reason
