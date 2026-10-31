@@ -64,25 +64,25 @@ defined('_HZEXEC_') or die();
 				elseif (!$this->group->get('approved'))
 				{
 					$item  = '<li class="protected members-only group-' . $class . '-tab">';
-					$item .= '<span data-icon="&#x' . $section['icon'] . '" aria-disabled="true" class="disabled' . $class . '">' . $title . '<span class="sr-only"> - ' . Lang::txt('COM_GROUPS_MENU_RESTRICTED_APPROVAL') . '</span></span>';
+					$item .= '<span data-icon="&#x' . $section['icon'] . '" aria-disabled="true" class="disabled ' . $class . '">' . $title . '<span class="sr-only"> - ' . Lang::txt('COM_GROUPS_MENU_RESTRICTED_APPROVAL') . '</span></span>';
 					$item .= '</li>';
 				}
 				elseif ($access == 'managers' && !in_array(User::get('id'), $this->group->get('managers')))
 				{
-					$item  = '<li class="protected managers-only group-' . $class . '-tab" title="' . Lang::txt('This page is restricted to group managers only!') . '">';
-					$item .= '<span data-icon="&#x' . $section['icon'] . '" class="disabled ' . $class . '">' . $title . '</span>';
+					$item  = '<li class="protected managers-only group-' . $class . '-tab">';
+					$item .= '<span data-icon="&#x' . $section['icon'] . '" aria-disabled="true" class="disabled ' . $class . '">' . $title . '<span class="sr-only"> - ' . Lang::txt('COM_GROUPS_MENU_MANAGERS_ONLY') . '</span></span>';
 					$item .= '</li>';
 				}
 				elseif ($access == 'members' && !in_array(User::get('id'), $this->group->get('members')))
 				{
 					$item  = '<li class="protected members-only group-' . $class . '-tab">';
-					$item .= '<span data-icon="&#x' . $section['icon'] . '" aria-disabled="true" class="disabled' . $class . '">' . $title . '<span class="sr-only"> - ' . Lang::txt('COM_GROUPS_MENU_MEMBERS_ONLY') . '</span></span>';
+					$item .= '<span data-icon="&#x' . $section['icon'] . '" aria-disabled="true" class="disabled ' . $class . '">' . $title . '<span class="sr-only"> - ' . Lang::txt('COM_GROUPS_MENU_MEMBERS_ONLY') . '</span></span>';
 					$item .= '</li>';
 				}
 				elseif ($access == 'registered' && User::isGuest())
 				{
 					$item  = '<li class="protected registered-only group-' . $class . '-tab">';
-					$item .= '<span data-icon="&#x' . $section['icon'] . '" aria-disabled="true" class="disabled' . $class . '">' . $title . '<span class="sr-only"> - ' . Lang::txt('COM_GROUPS_MENU_REGISTERED_ONLY') . '</span></span>';
+					$item .= '<span data-icon="&#x' . $section['icon'] . '" aria-disabled="true" class="disabled ' . $class . '">' . $title . '<span class="sr-only"> - ' . Lang::txt('COM_GROUPS_MENU_REGISTERED_ONLY') . '</span></span>';
 					$item .= '</li>';
 				}
 				else
