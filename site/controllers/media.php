@@ -76,13 +76,19 @@ class Media extends Base
 			}
 		}
 
-		// Check authorization
-		if ((!in_array(User::get('id'), $this->group->get('members')) && ($this->pluginAccess['files'] == 'members')) ||
-			(!in_array(User::get('id'), $this->group->get('managers')) && ($this->pluginAccess['files'] == 'managers')))
+		// Check authorization. Viewing follows the files access level; changing
+		// files ($this->authorized) is for members and managers only, so a
+		// non-member who can view an 'anyone' or 'registered' files area
+		// cannot reach the write tasks below.
+		$isMember  = in_array(User::get('id'), $this->group->get('members'));
+		$isManager = in_array(User::get('id'), $this->group->get('managers'));
+		$access    = $this->pluginAccess['files'];
+
+		if (($access == 'members' && !$isMember) || ($access == 'managers' && !$isManager))
 		{
 			$this->_errorHandler(403, Lang::txt('COM_GROUPS_ERROR_NOT_AUTH'));
 		}
-		else
+		elseif ($isMember || $isManager)
 		{
 			$this->authorized = true;
 		}
