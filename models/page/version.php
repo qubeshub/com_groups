@@ -126,7 +126,7 @@ class Version extends Model
 		{
 			case 'parsed':
 				$content = $this->get('content_parsed', null);
-				if ($content == null)
+				if ($content === null)
 				{
 					// Get group
 					$group = \Hubzero\User\Group::getInstance(Request::getString('cn', Request::getString('gid', '')));

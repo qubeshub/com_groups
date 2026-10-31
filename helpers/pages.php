@@ -572,6 +572,120 @@ class Pages
 	}
 
 	/**
+	 * Target of a page whose entire body is a JavaScript redirect
+	 *
+	 * These pages exist because a menu item cannot point at a group plugin
+	 * directly, so authors store a one-line script and the hub approves it.
+	 * The stored script no longer reaches the browser -- render-time
+	 * purifying drops <script> -- so the redirect is performed here instead.
+	 *
+	 * Deliberately narrow. The content must be one script element and
+	 * nothing else, assigning one string literal. A page carrying a
+	 * redirect *and* markup renders as it always has, because a reader of
+	 * that page is owed its content, not a jump somewhere else.
+	 *
+	 * Off-site targets are allowed, by the operator's decision (2026-10-19):
+	 * groups do point menu items at external sites, rios/vecina among them,
+	 * and refusing those left the page blank. The trade is real and worth
+	 * stating: a server-side redirect carries this host's authority, so the
+	 * approval queue is now the only thing standing between an approved page
+	 * and a visitor being sent anywhere. It was already the only thing
+	 * standing between them and arbitrary stored JavaScript, which is a
+	 * wider power than a redirect, so this does not widen the trust model --
+	 * but it does mean approving a page now includes approving where it
+	 * sends people.
+	 *
+	 * What is still refused: anything that is not http or https, so no
+	 * javascript: or data:; protocol-relative //host, which reads as a path
+	 * and is not what an author writes; control characters, which are a
+	 * header split; and a target equal to the page itself, which would be a
+	 * redirect loop rather than the browser reload it used to be.
+	 *
+	 * @param   string  $raw  Stored, unpurified page content
+	 * @return  string|false  A same-site target, or false if not a redirect
+	 */
+	protected static function redirectTarget($raw)
+	{
+		$content = trim((string) $raw);
+
+		if ($content === '' || stripos($content, '<script') === false)
+		{
+			return false;
+		}
+
+		// The editor wraps a pasted script in a paragraph on some of these
+		// pages, so <p><script>...</script></p> is the same intent. Unwrapped
+		// once only, and only when the paragraph is the whole document: a page
+		// with a paragraph of prose *and* a script keeps its prose.
+		$content = trim(preg_replace('#^<p\b[^>]*>(.*)</p>$#is', '$1', $content));
+
+		// The editor indents a pasted script with non-breaking spaces, which
+		// the browser treats as whitespace in JavaScript but \s does not
+		// match, so the page fell through to rendering -- and rendered blank.
+		$content = str_replace(array("\xC2\xA0", '&nbsp;', '&#160;', '&#xA0;'), ' ', $content);
+
+		$pattern = '#^<script\b[^>]*>\s*(?:window\.)?location'
+		         . '(?:\.(?:assign|replace)\(\s*|\.href\s*=\s*|\s*=\s*)'
+		         . '([\'"])(.+?)\1\s*\)?\s*;?\s*</script>\s*$#is';
+
+		if (!preg_match($pattern, $content, $m))
+		{
+			return false;
+		}
+
+		$url = trim(html_entity_decode($m[2], ENT_QUOTES, 'UTF-8'));
+
+		// No control characters, no newlines: both would be a header split.
+		if ($url === '' || preg_match('/[\x00-\x1f\x7f]/', $url))
+		{
+			return false;
+		}
+
+		// Protocol-relative is off-site by definition -- //evil.example is a
+		// host, not a path -- and is rejected before the path test below.
+		if (strpos($url, '//') === 0)
+		{
+			return false;
+		}
+
+		if ($url[0] === '/')
+		{
+			// Same-site by construction. Only this branch can loop back on
+			// the page being rendered, so only this branch is checked for it.
+			if (trim(strtok($url, '?'), '/') === trim(Request::path(), '/'))
+			{
+				return false;
+			}
+
+			return $url;
+		}
+
+		$parts = parse_url($url);
+
+		if ($parts === false
+		 || empty($parts['host'])
+		 || !isset($parts['scheme'])
+		 || !in_array(strtolower($parts['scheme']), array('http', 'https')))
+		{
+			return false;
+		}
+
+		// An absolute URL naming this host is the same page in a longer
+		// spelling, so it gets the loop check too.
+		if (strcasecmp($parts['host'], Request::host()) === 0)
+		{
+			$path = (isset($parts['path']) ? $parts['path'] : '/');
+
+			if (trim($path, '/') === trim(Request::path(), '/'))
+			{
+				return false;
+			}
+		}
+
+		return $url;
+	}
+
+	/**
 	 * Display Group Page
 	 *
 	 * @param    Object    $group    \Hubzero\User\Group Object
@@ -640,6 +754,29 @@ class Pages
 			$pageHit->date      = date('Y-m-d H:i:s');
 			$pageHit->ip        = $_SERVER['REMOTE_ADDR'];
 			$groupsTablePageHit->save($pageHit);
+		}
+
+
+		// A page whose entire body is a JavaScript redirect is a menu item
+		// pointing at a group plugin -- the only way to express that today.
+		// Those pages stopped redirecting when stored content began being
+		// purified at render time, because the purifier drops <script>
+		// unconditionally: 102 bytes in, nothing out.
+		//
+		// Answer with a real redirect instead. It needs nothing to survive
+		// sanitising, costs a round trip less, works without JavaScript, and
+		// is followed properly by crawlers rather than read as a blank page.
+		//
+		// Read the raw content, not content('parsed'): parsed is empty by the
+		// time the purifier has run, which is the whole problem. The version
+		// in hand is the approved one -- the guard above has already returned
+		// otherwise -- so a draft cannot redirect anyone. Placed after the hit
+		// is marked so these pages keep counting a visit, as they did when the
+		// browser ran the script.
+		if ($target = self::redirectTarget($version->get('content')))
+		{
+			App::redirect($target);
+			return;
 		}
 
 		// parse old wiki content
